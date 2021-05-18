@@ -98,6 +98,17 @@ function setupOpenMRS() {
           moduleName,
         }),
       },
+      {
+        id: 'visits-overview-widget',
+        slot: 'patient-chart-summary-dashboard-slot',
+        load: getAsyncLifecycle(() => import('./widgets/past-visits/past-visits-overview.component'), {
+          featureName: 'visit-overview-slot',
+          moduleName,
+        }),
+        meta: {
+          columnSpan: 4,
+        },
+      },
     ],
   };
 }
