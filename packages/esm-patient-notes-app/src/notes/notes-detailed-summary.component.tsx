@@ -1,8 +1,5 @@
 import React from 'react';
 import styles from './notes-overview.scss';
-import { EmptyState, ErrorState, launchStartVisitPrompt } from '@openmrs/esm-patient-common-lib';
-import { useTranslation } from 'react-i18next';
-import { attach, createErrorHandler, usePagination, useVisit, VisitItem } from '@openmrs/esm-framework';
 import Add16 from '@carbon/icons-react/es/add/16';
 import Button from 'carbon-components-react/es/components/Button';
 import DataTableSkeleton from 'carbon-components-react/es/components/DataTableSkeleton';
@@ -15,9 +12,13 @@ import DataTable, {
   TableHeader,
   TableRow,
 } from 'carbon-components-react/es/components/DataTable';
+import { EmptyState, ErrorState, launchStartVisitPrompt } from '@openmrs/esm-patient-common-lib';
+import { useTranslation } from 'react-i18next';
+import { attach, createErrorHandler, useVisit } from '@openmrs/esm-framework';
 import { getEncounterObservableRESTAPI, PatientNote } from './encounter.resource';
 import { formatNotesDate } from './notes-helper';
 import { useNotesContext } from './notes.context';
+
 const notesToShowCount = 5;
 
 interface NotesDetailedSummaryProps {
@@ -30,10 +31,10 @@ const NotesDetailedSummary: React.FC<NotesDetailedSummaryProps> = ({ showAddNote
   const headerTitle = t('notes', 'Notes');
 
   const { patientUuid } = useNotesContext();
-  const { currentVisit } = useVisit(patientUuid);
   const [notes, setNotes] = React.useState<Array<PatientNote>>(null);
   const [showAllNotes, setShowAllNotes] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const currentVisit = useVisit(patientUuid);
 
   React.useEffect(() => {
     if (patientUuid) {

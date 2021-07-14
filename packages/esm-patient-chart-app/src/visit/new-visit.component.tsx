@@ -12,10 +12,9 @@ import {
   UpdateVisitPayload,
   updateVisit,
   FetchResponse,
-  getStartedVisit,
   VisitMode,
   VisitStatus,
-  useSessionUser,
+  useCurrentUserSession,
 } from '@openmrs/esm-framework';
 
 export interface NewVisitProps {
@@ -27,25 +26,19 @@ export interface NewVisitProps {
 }
 
 const NewVisit: React.FC<NewVisitProps> = ({ patientUuid, onVisitStarted, onCanceled, closeComponent, viewMode }) => {
-  const currentUser = useSessionUser();
+  const currentUser = useCurrentUserSession();
   const { t } = useTranslation();
   const [visitStartDate, setVisitStartDate] = React.useState(dayjs(new Date()).format('YYYY-MM-DD'));
   const [visitStartTime, setVisitStartTime] = React.useState(dayjs(new Date()).format('HH:mm'));
   const [visitEndDate, setVisitEndDate] = React.useState('');
   const [visitEndTime, setVisitEndTime] = React.useState('');
-  const [locationUuid, setLocationUuid] = React.useState('');
+  const [locationUuid, setLocationUuid] = React.useState(() => currentUser?.sessionLocation?.uuid || '');
   const [visitUuid, setVisitUuid] = React.useState<string>();
-
-  if (!locationUuid && currentUser?.sessionLocation?.uuid) {
-    // init with session location
-    setLocationUuid(currentUser?.sessionLocation?.uuid);
-  }
-
   const [visitTypeUuid, setVisitTypeUuid] = React.useState('');
 
   // events
   const startVisit = () => {
-    let visitPayload: NewVisitPayload = {
+    const visitPayload: NewVisitPayload = {
       patient: patientUuid,
       startDatetime: new Date(`${visitStartDate} ${visitStartTime}:00`),
       visitType: visitTypeUuid,
@@ -67,7 +60,7 @@ const NewVisit: React.FC<NewVisitProps> = ({ patientUuid, onVisitStarted, onCanc
     );
   };
 
-  const handleUpdateVisit = (): void => {
+  const handleUpdateVisit = () => {
     const stopDatetime = visitEndDate && new Date(`${visitEndDate} ${visitEndTime}:00`);
     const updateVisitPayload: UpdateVisitPayload = {
       startDatetime: new Date(`${visitStartDate} ${visitStartTime}:00`),

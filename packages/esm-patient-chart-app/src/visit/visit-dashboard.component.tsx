@@ -37,7 +37,7 @@ interface EditVisitAction {
 
 type ActionTypes = EditVisitAction | NewVisitAction;
 
-function reducer(state: VisitDashboardPropsDefaultState, action: ActionTypes): VisitDashboardPropsDefaultState {
+function reducer(_: VisitDashboardPropsDefaultState, action: ActionTypes): VisitDashboardPropsDefaultState {
   switch (action.displayMode) {
     case DisplayModes.NEW_VISIT:
       return {

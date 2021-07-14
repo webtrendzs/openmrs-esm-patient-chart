@@ -4,7 +4,6 @@ import styles from './edit-visit.css';
 import { useTranslation } from 'react-i18next';
 import {
   createErrorHandler,
-  getStartedVisit,
   VisitStatus,
   VisitMode,
   getVisitsForPatient,

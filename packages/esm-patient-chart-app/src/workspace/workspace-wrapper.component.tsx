@@ -1,7 +1,7 @@
 import React from 'react';
 import Workspace from './workspace.component';
 import styles from './workspace-wrapper.component.css';
-import { WorkspaceItem, getNewWorkspaceItem } from '@openmrs/esm-framework';
+import { WorkspaceItem, getNewWorkspaceItem } from '@openmrs/esm-patient-common-lib';
 
 interface WorkspaceWrapperProps {
   patientUuid: string;

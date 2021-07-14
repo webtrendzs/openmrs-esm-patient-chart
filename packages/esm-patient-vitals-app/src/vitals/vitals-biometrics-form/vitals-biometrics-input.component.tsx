@@ -19,7 +19,7 @@ interface VitalsBiometricInputProps {
   placeholder?: string;
   disabled?: boolean;
   inputIsNormal: boolean;
-  isTablet: boolean;
+  isTablet?: boolean;
 }
 
 const VitalsBiometricInput: React.FC<VitalsBiometricInputProps> = ({

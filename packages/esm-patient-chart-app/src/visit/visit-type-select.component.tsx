@@ -19,21 +19,19 @@ export default function VisitTypeSelect(props: VisitTypeSelectProps) {
   );
 
   return (
-    <>
-      <select
-        name="visitType"
-        id={props.id || 'visitType'}
-        className="omrs-type-body-regular"
-        style={{ height: '40px' }}
-        onChange={onVisitTypesChanged}
-        value={props.visitTypeUuid}>
-        <option value="" className="omrs-padding-8" />
-        {visitTypes.map((visitType) => (
-          <option key={visitType.uuid} value={visitType.uuid} className="omrs-padding-8">
-            {visitType.display}
-          </option>
-        ))}
-      </select>
-    </>
+    <select
+      name="visitType"
+      id={props.id || 'visitType'}
+      className="omrs-type-body-regular"
+      style={{ height: '40px' }}
+      onChange={onVisitTypesChanged}
+      value={props.visitTypeUuid}>
+      <option value="" className="omrs-padding-8" />
+      {visitTypes.map((visitType) => (
+        <option key={visitType.uuid} value={visitType.uuid} className="omrs-padding-8">
+          {visitType.display}
+        </option>
+      ))}
+    </select>
   );
 }

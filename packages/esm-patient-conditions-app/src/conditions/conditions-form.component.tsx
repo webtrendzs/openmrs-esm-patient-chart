@@ -1,8 +1,6 @@
 import React, { SyntheticEvent } from 'react';
 import dayjs from 'dayjs';
 import debounce from 'lodash-es/debounce';
-import { useTranslation } from 'react-i18next';
-import { createErrorHandler, detach, showNotification, showToast, useSessionUser } from '@openmrs/esm-framework';
 import Button from 'carbon-components-react/es/components/Button';
 import DatePicker from 'carbon-components-react/es/components/DatePicker';
 import DatePickerInput from 'carbon-components-react/es/components/DatePickerInput';
@@ -12,9 +10,12 @@ import RadioButton from 'carbon-components-react/es/components/RadioButton';
 import RadioButtonGroup from 'carbon-components-react/es/components/RadioButtonGroup';
 import Search from 'carbon-components-react/es/components/Search';
 import SearchSkeleton from 'carbon-components-react/es/components/Search/Search.Skeleton';
+import styles from './conditions-form.scss';
+import { useTranslation } from 'react-i18next';
+import { createErrorHandler, detach, showNotification, showToast, useCurrentUser } from '@openmrs/esm-framework';
 import { Tile } from 'carbon-components-react/es/components/Tile';
 import { searchConditionConcepts, createPatientCondition, CodedCondition } from './conditions.resource';
-import styles from './conditions-form.scss';
+
 const searchTimeoutInMs = 500;
 
 interface Idle {
@@ -95,7 +96,7 @@ interface ConditionsFormProps {
 
 const ConditionsForm: React.FC<ConditionsFormProps> = ({ patientUuid, isTablet }) => {
   const { t } = useTranslation();
-  const session = useSessionUser();
+  const user = useCurrentUser();
   const [clinicalStatus, setClinicalStatus] = React.useState('active');
   const [endDate, setEndDate] = React.useState(null);
   const [onsetDate, setOnsetDate] = React.useState(new Date());
@@ -188,7 +189,7 @@ const ConditionsForm: React.FC<ConditionsFormProps> = ({ patientUuid, isTablet }
           reference: `Patient/${patientUuid}`,
         },
         recorder: {
-          reference: `Practitioner/${session?.user?.uuid}`,
+          reference: `Practitioner/${user?.uuid}`,
         },
         recordedDate: new Date().toISOString(),
       };
@@ -225,7 +226,7 @@ const ConditionsForm: React.FC<ConditionsFormProps> = ({ patientUuid, isTablet }
         sub.unsubscribe();
       };
     },
-    [clinicalStatus, closeWorkspace, endDate, onsetDate, patientUuid, session?.user?.uuid, t, viewState],
+    [clinicalStatus, closeWorkspace, endDate, onsetDate, patientUuid, user?.uuid, t, viewState],
   );
 
   return (

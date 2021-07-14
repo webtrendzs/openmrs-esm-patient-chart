@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './immunizations-form.css';
 import { SummaryCard } from '@openmrs/esm-patient-common-lib';
-import { createErrorHandler, useSessionUser, useVisit } from '@openmrs/esm-framework';
+import { createErrorHandler, useCurrentUserSession, useVisit } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import { savePatientImmunization } from './immunizations.resource';
 import { mapToFHIRImmunizationResource } from './immunization-mapper';
@@ -58,8 +58,8 @@ const ImmunizationsForm: React.FC<ImmunizationsFormProps> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const today = new Date().toISOString().split('T')[0];
-  const currentUser = useSessionUser();
-  const { currentVisit } = useVisit(patientUuid);
+  const session = useCurrentUserSession();
+  const currentVisit = useVisit(patientUuid);
 
   const isViewEditMode = !!formState.immunizationObsUuid;
   const enableCreateButtons = !isViewEditMode && !!formState.vaccinationDate;
@@ -98,8 +98,8 @@ const ImmunizationsForm: React.FC<ImmunizationsFormProps> = ({
   const handleFormSubmit = (event) => {
     event.preventDefault();
     const currentVisitUuid = currentVisit?.uuid;
-    const currentLocationUuid = currentUser?.sessionLocation?.uuid;
-    const currentProviderUuid = currentUser?.currentProvider?.uuid;
+    const currentLocationUuid = session?.location?.uuid;
+    const currentProviderUuid = session?.currentProvider.uuid;
 
     const immunization: ImmunizationFormData = {
       patientUuid,

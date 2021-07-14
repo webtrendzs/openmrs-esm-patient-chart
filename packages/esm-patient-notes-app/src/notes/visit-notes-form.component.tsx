@@ -14,7 +14,13 @@ import TextArea from 'carbon-components-react/es/components/TextArea';
 import { Tile } from 'carbon-components-react/es/components/Tile';
 import { useTranslation } from 'react-i18next';
 import { Column, Grid, Row } from 'carbon-components-react/es/components/Grid';
-import { createErrorHandler, showNotification, showToast, useConfig, useSessionUser } from '@openmrs/esm-framework';
+import {
+  createErrorHandler,
+  showNotification,
+  showToast,
+  useConfig,
+  useCurrentUserSession,
+} from '@openmrs/esm-framework';
 import { convertToObsPayload, Diagnosis, VisitNotePayload } from './visit-note.util';
 import { fetchDiagnosisByName, fetchLocationByUuid, fetchProviderByUuid, saveVisitNote } from './visit-notes.resource';
 import { ConfigObject } from '../config-schema';
@@ -99,13 +105,13 @@ interface VisitNotesFormProps {
 
 const VisitNotesForm: React.FC<VisitNotesFormProps> = ({ patientUuid, closeWorkspace, isTablet }) => {
   const { t } = useTranslation();
-  const session = useSessionUser();
+  const session = useCurrentUserSession();
   const config = useConfig() as ConfigObject;
   const { clinicianEncounterRole, encounterNoteConceptUuid, encounterTypeUuid, formConceptUuid } =
     config.visitNoteConfig;
   const [clinicalNote, setClinicalNote] = React.useState('');
-  const [currentSessionProviderUuid, setCurrentSessionProviderUuid] = React.useState<string | null>('');
-  const [currentSessionLocationUuid, setCurrentSessionLocationUuid] = React.useState('');
+  const currentSessionProviderUuid = React.useMemo<string | null>(() => session?.currentProvider.uuid || '', []);
+  const currentSessionLocationUuid = React.useMemo(() => session?.sessionLocation?.uuid || '', []);
   const [locationUuid, setLocationUuid] = React.useState<string | null>(null);
   const [providerUuid, setProviderUuid] = React.useState<string | null>(null);
   const [selectedDiagnoses, setSelectedDiagnoses] = React.useState<Array<Diagnosis>>([]);
@@ -113,39 +119,20 @@ const VisitNotesForm: React.FC<VisitNotesFormProps> = ({ patientUuid, closeWorks
   const [viewState, dispatch] = React.useReducer(viewStateReducer, initialViewState);
 
   React.useEffect(() => {
-    if (session && !currentSessionLocationUuid && !currentSessionProviderUuid) {
-      setCurrentSessionLocationUuid(session?.sessionLocation?.uuid);
-      setCurrentSessionProviderUuid(session?.currentProvider?.uuid);
-    }
-  }, [currentSessionLocationUuid, currentSessionProviderUuid, session]);
-
-  React.useEffect(() => {
     const ac = new AbortController();
+
     if (currentSessionProviderUuid) {
       fetchProviderByUuid(ac, currentSessionProviderUuid).then(({ data }) => {
         setProviderUuid(data.uuid);
       });
     }
+
     if (currentSessionLocationUuid) {
       fetchLocationByUuid(ac, currentSessionLocationUuid).then(({ data }) => setLocationUuid(data.uuid));
     }
-  }, [currentSessionLocationUuid, currentSessionProviderUuid]);
 
-  const handleSearchChange = (event) => {
-    const query = event.target.value.trim();
-    if (query) {
-      dispatch({
-        isSearching: true,
-        searchTerm: query,
-        type: ActionTypes.search,
-      });
-      debouncedSearch(query);
-    } else {
-      dispatch({
-        type: ActionTypes.idle,
-      });
-    }
-  };
+    return () => ac.abort();
+  }, [currentSessionLocationUuid, currentSessionProviderUuid]);
 
   const debouncedSearch = React.useMemo(
     () =>
@@ -168,6 +155,23 @@ const VisitNotesForm: React.FC<VisitNotesFormProps> = ({ patientUuid, closeWorks
       }, searchTimeoutInMs),
     [],
   );
+
+  const handleSearchChange = React.useCallback((event) => {
+    const query = event.target.value.trim();
+
+    if (query) {
+      dispatch({
+        isSearching: true,
+        searchTerm: query,
+        type: ActionTypes.search,
+      });
+      debouncedSearch(query);
+    } else {
+      dispatch({
+        type: ActionTypes.idle,
+      });
+    }
+  }, [debouncedSearch]);
 
   const handleAddDiagnosis = (diagnosisToAdd: Diagnosis) => {
     setSelectedDiagnoses((selectedDiagnoses) => [...selectedDiagnoses, diagnosisToAdd]);

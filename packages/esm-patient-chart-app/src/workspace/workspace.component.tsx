@@ -1,5 +1,5 @@
 import React from 'react';
-import { getNewWorkspaceItem, WorkspaceItem } from '@openmrs/esm-framework';
+import { getNewWorkspaceItem, WorkspaceItem } from '@openmrs/esm-patient-common-lib';
 import { Panel, Tabs } from './tabs.component';
 
 interface WorkspaceProps {

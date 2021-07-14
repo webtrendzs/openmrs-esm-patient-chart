@@ -70,10 +70,10 @@ const filterFormsByName = (formName: string, forms: Array<Form>) => {
 
 const FormView: React.FC<FormViewProps> = ({ forms, patientUuid, patient }) => {
   const { t } = useTranslation();
-  const { currentVisit } = useVisit(patientUuid);
   const [searchTerm, setSearchTerm] = React.useState<string>(null);
   const [allForms, setAllForms] = React.useState<Array<Form>>(forms);
   const { results, goTo, currentPage } = usePagination(allForms.sort(sortFormLatestFirst), 5);
+  const currentVisit = useVisit(patientUuid);
 
   const handleSearch = React.useMemo(() => debounce((searchTerm) => setSearchTerm(searchTerm), 300), []);
 

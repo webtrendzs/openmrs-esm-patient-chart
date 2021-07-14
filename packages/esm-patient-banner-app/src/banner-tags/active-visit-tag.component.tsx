@@ -1,14 +1,15 @@
 import React from 'react';
 import Tag from 'carbon-components-react/es/components/Tag';
 import TooltipDefinition from 'carbon-components-react/es/components/TooltipDefinition';
-import { useVisit } from '@openmrs/esm-framework';
 import dayjs from 'dayjs';
-import { useTranslation } from 'react-i18next';
 import styles from './active-visit-tag.scss';
+import { useVisit } from '@openmrs/esm-framework';
+import { useTranslation } from 'react-i18next';
 
 function ActiveVisitBannerTag({ patientUuid }) {
-  const { currentVisit } = useVisit(patientUuid);
+  const currentVisit = useVisit(patientUuid);
   const { t } = useTranslation();
+
   return (
     currentVisit && (
       <TooltipDefinition

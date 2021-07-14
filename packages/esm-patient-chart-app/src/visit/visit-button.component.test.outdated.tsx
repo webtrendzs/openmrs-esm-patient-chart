@@ -1,7 +1,8 @@
 import React from 'react';
 import VisitButton from './visit-button.component';
 import { render, fireEvent, screen } from '@testing-library/react';
-import { openmrsObservableFetch, newWorkspaceItem } from '@openmrs/esm-framework';
+import { openmrsObservableFetch } from '@openmrs/esm-framework';
+import { newWorkspaceItem } from '@openmrs/esm-patient-common-lib';
 import { of } from 'rxjs/internal/observable/of';
 import {
   mockPatientNoVisitsResponse,

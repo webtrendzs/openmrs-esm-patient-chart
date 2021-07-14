@@ -4,7 +4,7 @@ import filter from 'lodash-es/filter';
 import includes from 'lodash-es/includes';
 import map from 'lodash-es/map';
 import { useTranslation } from 'react-i18next';
-import { createErrorHandler, showNotification, showToast, useSessionUser } from '@openmrs/esm-framework';
+import { createErrorHandler, showNotification, showToast, useCurrentUserSession } from '@openmrs/esm-framework';
 import Button from 'carbon-components-react/es/components/Button';
 import DatePicker from 'carbon-components-react/es/components/DatePicker';
 import DatePickerInput from 'carbon-components-react/es/components/DatePickerInput';
@@ -87,16 +87,12 @@ interface ProgramsFormProps {
 
 const ProgramsForm: React.FC<ProgramsFormProps> = ({ patientUuid, closeWorkspace, isTablet }) => {
   const { t } = useTranslation();
-  const session = useSessionUser();
+  const session = useCurrentUserSession();
   const [availableLocations, setAvailableLocations] = React.useState(null);
   const [completionDate, setCompletionDate] = React.useState(null);
   const [enrollmentDate, setEnrollmentDate] = React.useState(new Date());
-  const [userLocation, setUserLocation] = React.useState('');
+  const [userLocation, setUserLocation] = React.useState(() => session?.sessionLocation?.uuid || '');
   const [viewState, dispatch] = React.useReducer(viewStateReducer, initialViewState);
-
-  if (!userLocation && session?.sessionLocation?.uuid) {
-    setUserLocation(session?.sessionLocation?.uuid);
-  }
 
   function handleProgramChange(event) {
     dispatch({

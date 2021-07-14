@@ -3,11 +3,10 @@ import dayjs from 'dayjs';
 import isEmpty from 'lodash-es/isEmpty';
 import VisitDashboard from './visit-dashboard.component';
 import styles from './visit-button.css';
+import { newWorkspaceItem } from '@openmrs/esm-patient-common-lib';
 import { useTranslation } from 'react-i18next';
 import {
-  newWorkspaceItem,
   FetchResponse,
-  getStartedVisit,
   VisitItem,
   VisitMode,
   VisitStatus,

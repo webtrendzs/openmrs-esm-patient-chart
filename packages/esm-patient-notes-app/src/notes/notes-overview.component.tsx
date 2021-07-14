@@ -14,7 +14,7 @@ import Add16 from '@carbon/icons-react/es/add/16';
 import styles from './notes-overview.scss';
 import { EmptyState, ErrorState, launchStartVisitPrompt } from '@openmrs/esm-patient-common-lib';
 import { useTranslation } from 'react-i18next';
-import { attach, useVisit, VisitItem } from '@openmrs/esm-framework';
+import { attach, useVisit } from '@openmrs/esm-framework';
 import { getEncounterObservableRESTAPI, PatientNote } from './encounter.resource';
 import { formatNotesDate } from './notes-helper';
 
@@ -28,10 +28,10 @@ interface NotesOverviewProps {
 const NotesOverview: React.FC<NotesOverviewProps> = ({ patientUuid, patient, showAddNote }) => {
   const notesToShowCount = 5;
   const { t } = useTranslation();
-  const { currentVisit } = useVisit(patientUuid);
   const [notes, setNotes] = React.useState<Array<PatientNote>>(null);
   const [error, setError] = React.useState(null);
   const [showAllNotes, setShowAllNotes] = React.useState(false);
+  const currentVisit = useVisit(patientUuid);
   const displayText = t('notes', 'Notes');
   const headerTitle = t('notes', 'Notes');
 

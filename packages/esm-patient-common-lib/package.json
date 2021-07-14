@@ -32,7 +32,10 @@
   },
   "peerDependencies": {
     "@openmrs/esm-framework": "3.x",
-    "react": "16.x"
+    "react": "16.x",
+    "rxjs": "6.x"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "rxjs": "^6.5.3"
+  }
 }

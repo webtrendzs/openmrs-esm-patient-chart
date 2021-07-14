@@ -1,11 +1,10 @@
 import React from 'react';
+import userEvent from '@testing-library/user-event';
+import NotesOverview from './notes-overview.component';
 import { of } from 'rxjs/internal/observable/of';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
 import { openmrsObservableFetch } from '@openmrs/esm-framework';
-import NotesOverview from './notes-overview.component';
 import { mockPatient } from '../../../../__mocks__/patient.mock';
 import { mockPatientEncountersRESTAPI } from '../../../../__mocks__/encounters.mock';
 
@@ -17,12 +16,8 @@ const testProps = {
 };
 
 const mockOpenmrsObservableFetch = openmrsObservableFetch as jest.Mock;
-const mockGetStartedVisitGetter = jest.fn();
 
 jest.mock('@openmrs/esm-framework', () => ({
-  get getStartedVisit() {
-    return mockGetStartedVisitGetter();
-  },
   openmrsObservableFetch: jest.fn(),
 }));
 
@@ -30,7 +25,6 @@ const renderNotesOverview = () => render(<NotesOverview {...testProps} />);
 
 it('renders an empty state view if encounter data is unavailable', () => {
   mockOpenmrsObservableFetch.mockReturnValue(of({ data: [] }));
-  mockGetStartedVisitGetter.mockReturnValue(new BehaviorSubject(null));
 
   renderNotesOverview();
 

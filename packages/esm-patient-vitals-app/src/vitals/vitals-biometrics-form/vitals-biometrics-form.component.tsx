@@ -3,7 +3,13 @@ import VitalsBiometricInput from './vitals-biometrics-input.component';
 import Button from 'carbon-components-react/es/components/Button';
 import styles from './vitals-biometrics-form.component.scss';
 import { useTranslation } from 'react-i18next';
-import { useConfig, createErrorHandler, useSessionUser, showToast, showNotification } from '@openmrs/esm-framework';
+import {
+  useConfig,
+  createErrorHandler,
+  useCurrentUserSession,
+  showToast,
+  showNotification,
+} from '@openmrs/esm-framework';
 import { Column, Grid, Row } from 'carbon-components-react/es/components/Grid';
 import { calculateBMI, isInNormalRange } from './vitals-biometrics-form.utils';
 import { savePatientVitals } from '../vitals-biometrics.resource';
@@ -13,7 +19,7 @@ import { ConfigObject } from '../../config-schema';
 interface VitalsAndBiometricFormProps {
   patientUuid: string;
   closeWorkspace(): void;
-  isTablet: boolean;
+  isTablet?: boolean;
 }
 
 export interface PatientVitalAndBiometric {
@@ -30,7 +36,7 @@ export interface PatientVitalAndBiometric {
 }
 
 const VitalsAndBiometricForms: React.FC<VitalsAndBiometricFormProps> = ({ patientUuid, closeWorkspace, isTablet }) => {
-  const session = useSessionUser();
+  const session = useCurrentUserSession();
   const config = useConfig() as ConfigObject;
   const { t } = useTranslation();
   const { vitalsSignsConceptMetadata, conceptsUnits } = useVitalsSignsConceptMetaData();
@@ -67,7 +73,7 @@ const VitalsAndBiometricForms: React.FC<VitalsAndBiometricFormProps> = ({ patien
       patientVitalAndBiometrics,
       new Date(),
       ac,
-      session?.sessionLocation?.uuid,
+      session?.location?.uuid,
     )
       .then((response) => {
         if (response.status === 201) {

@@ -1,6 +1,8 @@
-import { NewVisitPayload, Visit } from '@openmrs/esm-api';
+import { v4 } from 'uuid';
+import { useEffect } from 'react';
 import {
-  getStartedVisit,
+  NewVisitPayload,
+  Visit,
   getSynchronizationItems,
   messageOmrsServiceWorker,
   queueSynchronizationItem,
@@ -11,8 +13,6 @@ import {
   subscribeConnectivity,
   QueueItemDescriptor,
 } from '@openmrs/esm-framework';
-import { useEffect } from 'react';
-import { v4 } from 'uuid';
 
 interface OfflineVisit extends NewVisitPayload {
   uuid: string;

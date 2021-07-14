@@ -1,4 +1,4 @@
-import { getStartedVisit, newWorkspaceItem, WorkspaceItem } from '@openmrs/esm-framework';
+import { newWorkspaceItem, WorkspaceItem } from './workspace';
 import isEmpty from 'lodash-es/isEmpty';
 
 export interface DataCaptureComponentProps {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, SyntheticEvent } from 'react';
 import styles from './appointments-form.css';
 import { SummaryCard } from '@openmrs/esm-patient-common-lib';
-import { createErrorHandler, useSessionUser } from '@openmrs/esm-framework';
+import { createErrorHandler, useCurrentUserSession } from '@openmrs/esm-framework';
 import { createAppointment, getAppointmentService, getAppointmentServiceAll } from './appointments.resource';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
@@ -30,9 +30,8 @@ const AppointmentsForm: React.FC<AppointmentsFormProps> = ({
   entryCancelled = () => {},
   closeComponent = () => {},
 }) => {
-  const session = useSessionUser();
+  const session = useCurrentUserSession();
   const formRef = useRef<HTMLFormElement>(null);
-  const [currentSession, setCurrentSession] = useState(null);
   const [appointmentService, setAppointmentService] = useState(null);
   const [appointmentServiceType, setAppointmentServiceType] = useState(null);
   const [appointmentDate, setAppointmentDate] = useState(null);
@@ -40,7 +39,6 @@ const AppointmentsForm: React.FC<AppointmentsFormProps> = ({
   const [appointmentEndTime, setAppointmentEndTime] = useState(null);
   const [appointmentKind, setAppointmentKind] = useState('Scheduled');
   const [comments, setComment] = useState(null);
-  const [location, setLocation] = useState(null);
   const [serviceUuid, setServiceUuid] = useState('');
   const [serviceTypeUuid, setServiceTypeUuid] = useState(null);
   const [formChanged, setFormChanged] = useState<boolean>(false);
@@ -56,13 +54,6 @@ const AppointmentsForm: React.FC<AppointmentsFormProps> = ({
   }, [appointmentDate, appointmentStartTime, appointmentEndTime]);
 
   useEffect(() => {
-    if (session && !currentSession && !location) {
-      setCurrentSession(session);
-      setLocation(session?.sessionLocation?.uuid);
-    }
-  }, [session, currentSession, location]);
-
-  useEffect(() => {
     const abortController = new AbortController();
 
     if (patientUuid) {
@@ -75,21 +66,23 @@ const AppointmentsForm: React.FC<AppointmentsFormProps> = ({
   }, [patientUuid]);
 
   useEffect(() => {
-    const abortController = new AbortController();
+    const ac = new AbortController();
+
     if (serviceUuid && serviceUuid !== 'default') {
-      getAppointmentService(abortController, serviceUuid).then(({ data }) => {
+      getAppointmentService(ac, serviceUuid).then(({ data }) => {
         setAppointmentServiceType(data.serviceTypes);
       });
     }
   }, [serviceUuid]);
 
-  const navigate = () => {
+  const navigate = React.useCallback(() => {
     history.push(`/patient/${patientUuid}/chart/appointments`);
-  };
+  }, [history, patientUuid]);
 
-  const closeForm = (event: SyntheticEvent<HTMLButtonElement>) => {
+  const closeForm = React.useCallback(() => {
     formRef.current.reset();
     let userConfirmed: boolean = false;
+
     if (formChanged) {
       userConfirmed = confirm('There is ongoing work, are you sure you want to close this tab?');
     }
@@ -101,30 +94,42 @@ const AppointmentsForm: React.FC<AppointmentsFormProps> = ({
       entryCancelled();
       closeComponent();
     }
-  };
+  }, [entryCancelled, closeComponent, formRef.current]);
 
-  const handleCreateFormSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    let startDateTime = new Date(appointmentDate + ' ' + appointmentStartTime);
-    let endDateTime = new Date(appointmentDate + ' ' + appointmentEndTime);
-
-    let appointment: Appointment = {
-      serviceTypeUuid: serviceTypeUuid,
-      serviceUuid: serviceUuid,
-      startDateTime: startDateTime,
-      endDateTime: endDateTime,
-      appointmentKind: appointmentKind,
-      comments: comments,
-      locationUuid: location,
-      patientUuid: patientUuid,
-      status: null,
-      providerUuid: currentSession.currentProvider.uuid,
-    };
-    const abortController = new AbortController();
-    createAppointment(appointment, abortController).then((response) => {
-      response.status === 200 && navigate();
-    }, createErrorHandler());
-  };
+  const handleCreateFormSubmit = React.useCallback(
+    (event: SyntheticEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const ac = new AbortController();
+      const startDateTime = new Date(appointmentDate + ' ' + appointmentStartTime);
+      const endDateTime = new Date(appointmentDate + ' ' + appointmentEndTime);
+      const appointment: Appointment = {
+        serviceTypeUuid,
+        serviceUuid,
+        startDateTime,
+        endDateTime,
+        appointmentKind,
+        comments,
+        patientUuid,
+        status: null,
+        locationUuid: session?.location?.uuid,
+        providerUuid: session?.currentProvider.uuid,
+      };
+      createAppointment(appointment, ac).then((response) => {
+        response.status === 200 && navigate();
+      }, createErrorHandler());
+    },
+    [
+      appointmentDate,
+      appointmentStartTime,
+      appointmentEndTime,
+      serviceTypeUuid,
+      serviceUuid,
+      appointmentKind,
+      comments,
+      session,
+      patientUuid,
+    ],
+  );
 
   return (
     <SummaryCard

@@ -23,7 +23,7 @@ lodash.capitalize = jest.fn().mockImplementation((s) => s.charAt(0).toUpperCase(
 
 function renderPatientBanner() {
   mockAge.mockReturnValue('49 years');
-  mockUseVisit.mockReturnValue({ currentVisit: mockCurrentVisit, error: null });
+  mockUseVisit.mockReturnValue(mockCurrentVisit);
   mockOpenmrsObservableFetch.mockReturnValue(of(mockVisits));
   mockOpenmrsFetch.mockReturnValue(Promise.resolve([]));
   render(<PatientBanner patientUuid={mockPatient.id} patient={mockPatient} />);
@@ -31,10 +31,7 @@ function renderPatientBanner() {
 
 function renderEmptyPatientBanner() {
   mockAge.mockReturnValue('49 years');
-  mockUseVisit.mockReturnValue({
-    currentVisit: undefined,
-    error: null,
-  });
+  mockUseVisit.mockReturnValue(undefined);
   mockOpenmrsObservableFetch.mockReturnValue(of([]));
   mockOpenmrsFetch.mockReturnValue(Promise.resolve([]));
   render(<PatientBanner patientUuid={mockPatient.id} patient={mockPatient} />);

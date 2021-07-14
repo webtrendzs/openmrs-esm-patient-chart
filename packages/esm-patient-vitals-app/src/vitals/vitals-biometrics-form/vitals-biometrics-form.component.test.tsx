@@ -7,7 +7,6 @@ import { mockSessionDataResponse } from '../../../../../__mocks__/session.mock';
 import { mockConceptsUnits, mockVitalsConfig } from '../../../../../__mocks__/vitals.mock';
 import { mockPatient } from '../../../../../__mocks__/patient.mock';
 import * as mockOpenmrsFramework from '@openmrs/esm-framework';
-import { of } from 'rxjs';
 import * as mockUseVitalSigns from './use-vitalsigns';
 
 const mockSavePatientVitals = savePatientVitals as jest.Mock;
@@ -23,7 +22,9 @@ describe('<VitalsBiometricsForm/>', () => {
   const renderForm = () => {
     spyOn(mockUseVitalSigns, 'useVitalsSignsConceptMetaData').and.returnValue(mockConceptsUnits);
     spyOn(mockOpenmrsFramework, 'useConfig').and.returnValue(mockVitalsConfig);
-    spyOn(mockOpenmrsFramework, 'useSessionUser').and.returnValue(of(mockSessionDataResponse));
+    spyOn(mockOpenmrsFramework, 'useCurrentUserSession').and.returnValue({
+      location: mockSessionDataResponse.data.sessionLocation,
+    });
     render(<VitalsAndBiometricForms closeWorkspace={mockCloseWorkspace} patientUuid={mockPatient.id} />);
   };
 

@@ -8,7 +8,7 @@ interface StopVisitOverflowMenuItemProps {
 
 const StopVisitOverflowMenuItem: React.FC<StopVisitOverflowMenuItemProps> = ({ patientUuid }) => {
   const { t } = useTranslation();
-  const { currentVisit } = useVisit(patientUuid);
+  const currentVisit = useVisit(patientUuid);
   const handleClick = React.useCallback(
     () =>
       window.dispatchEvent(
