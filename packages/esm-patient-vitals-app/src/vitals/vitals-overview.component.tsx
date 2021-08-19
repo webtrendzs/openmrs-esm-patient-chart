@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import Add16 from '@carbon/icons-react/es/add/16';
 import ChartLineSmooth16 from '@carbon/icons-react/es/chart--line-smooth/16';
 import Table16 from '@carbon/icons-react/es/table/16';
@@ -14,69 +15,84 @@ import DataTable, {
   TableHeader,
   TableRow,
 } from 'carbon-components-react/es/components/DataTable';
-import styles from './vitals-overview.scss';
-import VitalsChart from './vitals-chart.component';
+import Pagination from 'carbon-components-react/lib/components/Pagination';
+import { attach } from '@openmrs/esm-framework';
 import { EmptyState, ErrorState } from '@openmrs/esm-patient-common-lib';
-import { useTranslation } from 'react-i18next';
-import { useConfig, attach } from '@openmrs/esm-framework';
-import { useVitalsSignsConceptMetaData, withUnit } from './vitals-biometrics-form/use-vitalsigns';
+import VitalsChart from './vitals-chart.component';
+import { useVitals, useVitalsConceptMetadata, withUnit } from './vitals.resource';
 import { patientVitalsBiometricsFormWorkspace } from '../constants';
-import { PatientVitals, performPatientsVitalsSearch } from './vitals-biometrics.resource';
-
+import styles from './vitals-overview.scss';
 const vitalsToShowCount = 5;
 
-interface RenderVitalsProps {
-  headerTitle: string;
-  tableRows: Array<{}>;
-  vitals: Array<PatientVitals>;
-  showAllVitals: boolean;
+interface VitalsOverviewProps {
+  patientUuid: string;
   showAddVitals: boolean;
-  toggleShowAllVitals(): void;
 }
 
-const RenderVitals: React.FC<RenderVitalsProps> = ({
-  headerTitle,
-  tableRows,
-  vitals,
-  showAllVitals,
-  showAddVitals,
-  toggleShowAllVitals,
-}) => {
+const VitalsOverview: React.FC<VitalsOverviewProps> = ({ patientUuid, showAddVitals }) => {
   const { t } = useTranslation();
-  const [chartView, setChartView] = React.useState<boolean>();
+  const headerTitle = t('vitals', 'Vitals');
   const displayText = t('vitalSigns', 'Vital signs');
-  const { conceptsUnits } = useVitalsSignsConceptMetaData();
+  const previousPage = t('previousPage', 'Previous page');
+  const nextPage = t('nextPage', 'Next Page');
+  const itemPerPage = t('itemPerPage', 'Item per page');
 
-  const [bloodPressureUnit, , temperatureUnit, , , pulseUnit, oxygenSaturationUnit, , respiratoryRateUnit] =
-    conceptsUnits;
+  const { data: vitals, isError, isLoading } = useVitals(patientUuid);
+  const { data: conceptData } = useVitalsConceptMetadata();
+  const conceptUnits = conceptData ? conceptData.conceptUnits : null;
 
-  const tableHeaders = [
-    { key: 'date', header: 'Date', isSortable: true },
-    {
-      key: 'bloodPressure',
-      header: withUnit('BP', bloodPressureUnit),
-    },
-    {
-      key: 'respiratoryRate',
-      header: withUnit('R. Rate', respiratoryRateUnit),
-    },
-    { key: 'pulse', header: withUnit('Pulse', pulseUnit) },
-    {
-      key: 'spo2',
-      header: withUnit('SPO2', oxygenSaturationUnit),
-    },
-    {
-      key: 'temperature',
-      header: withUnit('Temp', temperatureUnit),
-    },
-  ];
+  const [firstRowIndex, setFirstRowIndex] = React.useState(0);
+  const [currentPageSize, setCurrentPageSize] = React.useState(5);
+  const [chartView, setChartView] = React.useState(false);
 
   const launchVitalsBiometricsForm = React.useCallback(
     () => attach('patient-chart-workspace-slot', patientVitalsBiometricsFormWorkspace),
     [],
   );
 
-  if (tableRows.length) {
+  const tableHeaders = React.useMemo(
+    () => [
+      { key: 'date', header: 'Date', isSortable: true },
+      {
+        key: 'bloodPressure',
+        header: withUnit('BP', conceptUnits ? conceptUnits[0] : ''),
+      },
+      {
+        key: 'respiratoryRate',
+        header: withUnit('R. Rate', conceptUnits ? conceptUnits[8] : ''),
+      },
+      { key: 'pulse', header: withUnit('Pulse', conceptUnits ? conceptUnits[5] : '') },
+      {
+        key: 'spo2',
+        header: withUnit('SPO2', conceptUnits ? conceptUnits[6] : ''),
+      },
+      {
+        key: 'temperature',
+        header: withUnit('Temp', conceptUnits ? conceptUnits[2] : ''),
+      },
+    ],
+    [conceptUnits],
+  );
+
+  const tableRows = React.useMemo(
+    () =>
+      vitals?.slice(firstRowIndex, firstRowIndex + currentPageSize).map((vital, index) => {
+        return {
+          id: `${index}`,
+          date: dayjs(vital.date).format(`DD - MMM - YYYY`),
+          bloodPressure: `${vital.systolic ?? '-'} / ${vital.diastolic ?? '-'}`,
+          pulse: vital.pulse,
+          spo2: vital.oxygenSaturation,
+          temperature: vital.temperature,
+          respiratoryRate: vital.respiratoryRate,
+        };
+      }),
+    [vitals, firstRowIndex, currentPageSize],
+  );
+
+  if (isLoading) return <DataTableSkeleton role="progressbar" rowCount={vitalsToShowCount} />;
+  if (isError) return <ErrorState error={isError} headerTitle={headerTitle} />;
+  if (vitals?.length) {
     return (
       <div className={styles.vitalsWidgetContainer}>
         <div className={styles.vitalsHeaderContainer}>
@@ -107,125 +123,63 @@ const RenderVitals: React.FC<RenderVitalsProps> = ({
             </Button>
           )}
         </div>
-        {chartView ? (
-          <VitalsChart patientVitals={vitals} conceptsUnits={conceptsUnits} />
+        {chartView && vitals.length ? (
+          <VitalsChart patientVitals={vitals} conceptsUnits={conceptUnits} />
         ) : (
-          <TableContainer>
-            <DataTable rows={tableRows} headers={tableHeaders} isSortable={true} size="short">
-              {({ rows, headers, getHeaderProps, getTableProps }) => (
-                <Table {...getTableProps()}>
-                  <TableHead>
-                    <TableRow>
-                      {headers.map((header) => (
-                        <TableHeader
-                          className={`${styles.productiveHeading01} ${styles.text02}`}
-                          {...getHeaderProps({
-                            header,
-                            isSortable: header.isSortable,
-                          })}>
-                          {header.header?.content ?? header.header}
-                        </TableHeader>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.cells.map((cell) => (
-                          <TableCell key={cell.id}>{cell.value?.content ?? cell.value}</TableCell>
+          <>
+            <TableContainer>
+              <DataTable rows={tableRows} headers={tableHeaders} isSortable={true} size="short">
+                {({ rows, headers, getHeaderProps, getTableProps }) => (
+                  <Table {...getTableProps()}>
+                    <TableHead>
+                      <TableRow>
+                        {headers.map((header) => (
+                          <TableHeader
+                            className={`${styles.productiveHeading01} ${styles.text02}`}
+                            {...getHeaderProps({
+                              header,
+                              isSortable: header.isSortable,
+                            })}>
+                            {header.header?.content ?? header.header}
+                          </TableHeader>
                         ))}
                       </TableRow>
-                    ))}
-                    {!showAllVitals && vitals?.length > vitalsToShowCount && (
-                      <TableRow>
-                        <TableCell colSpan={4}>
-                          <span
-                            style={{
-                              display: 'inline-block',
-                              margin: '0.45rem 0rem',
-                            }}>
-                            {`${vitalsToShowCount} / ${vitals.length}`} {t('items', 'items')}
-                          </span>
-                          <Button size="small" kind="ghost" onClick={toggleShowAllVitals}>
-                            {t('seeAll', 'See all')}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              )}
-            </DataTable>
-          </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                      {rows.map((row) => (
+                        <TableRow key={row.id}>
+                          {row.cells.map((cell) => (
+                            <TableCell key={cell.id}>{cell.value?.content ?? cell.value}</TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </DataTable>
+            </TableContainer>
+            {vitals?.length > vitalsToShowCount && (
+              <Pagination
+                totalItems={vitals?.length}
+                backwardText={previousPage}
+                forwardText={nextPage}
+                pageSize={currentPageSize}
+                pageSizes={[5, 10, 15, 25]}
+                itemsPerPageText={itemPerPage}
+                onChange={({ page, pageSize }) => {
+                  if (pageSize !== currentPageSize) {
+                    setCurrentPageSize(pageSize);
+                  }
+                  setFirstRowIndex(pageSize * (page - 1));
+                }}
+              />
+            )}
+          </>
         )}
       </div>
     );
   }
   return <EmptyState displayText={displayText} headerTitle={headerTitle} launchForm={launchVitalsBiometricsForm} />;
-};
-
-interface VitalsOverviewProps {
-  patientUuid: string;
-  showAddVitals: boolean;
-}
-
-const VitalsOverview: React.FC<VitalsOverviewProps> = ({ patientUuid, showAddVitals }) => {
-  const config = useConfig();
-  const { t } = useTranslation();
-  const [vitals, setVitals] = React.useState<Array<PatientVitals>>(null);
-  const [error, setError] = React.useState(null);
-  const [showAllVitals, setShowAllVitals] = React.useState(false);
-  const headerTitle = t('vitals', 'Vitals');
-
-  const toggleShowAllVitals = React.useCallback(() => setShowAllVitals((value) => !value), []);
-
-  React.useEffect(() => {
-    if (patientUuid) {
-      const subscription = performPatientsVitalsSearch(config.concepts, patientUuid, 100).subscribe(
-        (vitals) => setVitals(vitals),
-        (err) => setError(err),
-      );
-      return () => subscription.unsubscribe();
-    }
-  }, [patientUuid, config.concepts]);
-
-  const tableRows = React.useMemo(
-    () =>
-      vitals
-        ?.slice(0, showAllVitals ? vitals.length : vitalsToShowCount)
-        .sort((a, b) => (b.date > a.date ? 1 : -1))
-        .map((vital, index) => {
-          return {
-            id: `${index}`,
-            date: dayjs(vital.date).format(`DD - MMM - YYYY`),
-            bloodPressure: `${vital.systolic ?? '-'} / ${vital.diastolic ?? '-'}`,
-            pulse: vital.pulse,
-            spo2: vital.oxygenSaturation,
-            temperature: vital.temperature,
-            respiratoryRate: vital.respiratoryRate,
-          };
-        }),
-    [vitals, showAllVitals],
-  );
-
-  return (
-    <>
-      {tableRows ? (
-        <RenderVitals
-          headerTitle={headerTitle}
-          tableRows={tableRows}
-          vitals={vitals}
-          showAllVitals={showAllVitals}
-          showAddVitals={showAddVitals}
-          toggleShowAllVitals={toggleShowAllVitals}
-        />
-      ) : error ? (
-        <ErrorState error={error} headerTitle={headerTitle} />
-      ) : (
-        <DataTableSkeleton rowCount={vitalsToShowCount} />
-      )}
-    </>
-  );
 };
 
 export default VitalsOverview;

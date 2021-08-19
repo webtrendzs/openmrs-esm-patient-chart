@@ -7,10 +7,11 @@ import FormView from './form-view.component';
 import styles from './forms.component.scss';
 import { EmptyState, ErrorState } from '@openmrs/esm-patient-common-lib';
 import { useTranslation } from 'react-i18next';
-import { fetchAllForms, fetchPatientEncounters } from './forms.resource';
+import { useEncounters, useForms } from './forms.resource';
 import { filterAvailableAndCompletedForms } from './forms-utils';
-import { Encounter, Form } from '../types';
+import { Encounter } from '../types';
 import EmptyFormView from './empty-form.component';
+import { DataTableSkeleton } from 'carbon-components-react';
 
 enum FormViewState {
   recommended = 0,
@@ -27,50 +28,42 @@ const Forms: React.FC<FormsProps> = ({ patientUuid, patient }) => {
   const { t } = useTranslation();
   const displayText = t('forms', 'Forms');
   const headerTitle = t('forms', 'Forms');
-  const [error, setError] = React.useState(null);
-  const [forms, setForms] = React.useState<Array<Form>>([]);
-  const [encounters, setEncounters] = React.useState<Array<Encounter>>([]);
-  const [completedForms, setCompletedForms] = React.useState<Array<Form>>([]);
+  const fromDate = dayjs(new Date()).startOf('day').subtract(500, 'day');
+  const toDate = dayjs(new Date()).endOf('day');
   const [selectedFormView, setSelectedFormView] = React.useState<FormViewState>(FormViewState.all);
-  const [filledForms, setFilledForms] = React.useState<Array<Form>>([]);
 
-  React.useEffect(() => {
-    fetchAllForms().subscribe((forms) => setForms(forms), setError);
-  }, []);
+  const { data: forms, isLoading: isLoadingForms, isError: isErrorForms } = useForms();
+  const {
+    data: encounters,
+    isLoading: isLoadingEncounters,
+    isError: isErrorEncounters,
+  } = useEncounters(patientUuid, fromDate.toDate(), toDate.toDate());
 
-  React.useEffect(() => {
-    const fromDate = dayjs(new Date()).startOf('day').subtract(500, 'day');
-    const toDate = dayjs(new Date()).endOf('day');
-    fetchPatientEncounters(patientUuid, fromDate.toDate(), toDate.toDate()).subscribe(
-      (encounters) => setEncounters(encounters),
-      setError,
-    );
-  }, [patientUuid]);
+  const completedForms =
+    encounters && forms
+      ? filterAvailableAndCompletedForms(forms, encounters).completed.map((encounters) => {
+          encounters.form.complete = true;
+          encounters.form.lastCompleted = encounters.encounterDateTime ? encounters.encounterDateTime : null;
+          return encounters.form;
+        })
+      : null;
 
-  React.useEffect(() => {
-    const availableForms = filterAvailableAndCompletedForms(forms, encounters);
-    const completedForms = availableForms.completed.map((encounters) => {
-      encounters.form.complete = true;
-      encounters.form.lastCompleted = encounters.encounterDateTime ? encounters.encounterDateTime : null;
-      return encounters.form;
-    });
-    setCompletedForms(completedForms);
-  }, [forms, encounters]);
+  const filledForms = forms
+    ? forms.map((form) => {
+        completedForms.map((completeForm) => {
+          if (completeForm.uuid === form.uuid) {
+            form.complete = true;
+            form.lastCompleted = completeForm.lastCompleted ? completeForm.lastCompleted : null;
+          }
+        });
+        return form;
+      })
+    : null;
 
-  React.useEffect(() => {
-    const filledForms = forms.map((form) => {
-      completedForms.map((completeForm) => {
-        if (completeForm.uuid === form.uuid) {
-          form.complete = true;
-          form.lastCompleted = completeForm.lastCompleted ? completeForm.lastCompleted : null;
-        }
-      });
-      return form;
-    });
-    setFilledForms(filledForms);
-  }, [forms, completedForms]);
-
-  const RenderForm = () => {
+  if (isLoadingEncounters || isLoadingForms) return <DataTableSkeleton />;
+  if (isErrorForms) return <ErrorState error={isErrorForms} headerTitle={headerTitle} />;
+  if (isErrorEncounters) return <ErrorState error={isErrorEncounters} headerTitle={headerTitle} />;
+  if (filledForms) {
     return (
       <div className={styles.formsWidgetContainer}>
         <div className={styles.formsHeaderContainer}>
@@ -109,18 +102,8 @@ const Forms: React.FC<FormsProps> = ({ patientUuid, patient }) => {
         </div>
       </div>
     );
-  };
-
-  return (
-    <>
-      {filledForms.length > 0 ? (
-        <RenderForm />
-      ) : (
-        <EmptyState displayText={displayText} headerTitle={t('helpText', 'Contact system Admin to configure form')} />
-      )}
-      {error && <ErrorState error={error} headerTitle={headerTitle} />}
-    </>
-  );
+  }
+  return <EmptyState displayText={displayText} headerTitle={t('helpText', 'Contact system Admin to configure form')} />;
 };
 
 export default Forms;

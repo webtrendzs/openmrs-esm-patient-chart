@@ -431,7 +431,7 @@ export const mockVitalsChartData = [
 ];
 
 export const mockConceptsUnits = {
-  vitalsSignsConceptMetadata: mockVitalsSignsConcept.data.results,
+  metadata: mockVitalsSignsConcept.data.results,
   conceptsUnits: ['mmHg', 'mmHg', 'DEG C', 'cm', 'kg', 'beats/min', '%', 'cm', '/ min'],
 };
 
@@ -2372,16 +2372,16 @@ export const mockFhirVitalsResponse = {
 export const mockVitalsConfig = {
   biometrics: { bmiUnit: 'kg / m²' },
   concepts: {
-    diastolicBloodPressureUuid: '5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    generalPatientNoteUuid: '165095AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    heightUuid: '5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    midUpperArmCircumferenceUuid: '1343AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    oxygenSaturationUuid: '5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    pulseUuid: '5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    respiratoryRateUuid: '5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     systolicBloodPressureUuid: '5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    diastolicBloodPressureUuid: '5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    pulseUuid: '5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     temperatureUuid: '5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    oxygenSaturationUuid: '5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    heightUuid: '5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     weightUuid: '5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    respiratoryRateUuid: '5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    generalPatientNoteUuid: '165095AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    midUpperArmCircumferenceUuid: '1343AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   },
   vitals: {
     encounterTypeUuid: '67a71486-1a54-468f-ac3e-7091a9a79584',

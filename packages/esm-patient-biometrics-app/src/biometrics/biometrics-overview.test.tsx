@@ -2,40 +2,45 @@ import React from 'react';
 import { cache } from 'swr';
 import { screen } from '@testing-library/react';
 import { attach, openmrsFetch, useConfig } from '@openmrs/esm-framework';
-import { mockPatient } from '../../../../__mocks__/patient.mock';
-import { mockFhirVitalsResponse, mockVitalsConfig } from '../../../../__mocks__/vitals.mock';
+import BiometricsOverview from './biometrics-overview.component';
 import { render, waitForLoadingToFinish } from '../../../../tools/app-test-utils';
-import VitalsOverview from './vitals-overview.component';
+import { mockPatient } from '../../../../__mocks__/patient.mock';
+import { mockBiometricsResponse } from '../../../../__mocks__/biometrics.mock';
 
-const testProps = {
-  patientUuid: mockPatient.id,
-  showAddVitals: false,
+const mockBiometricsConfig = {
+  biometrics: { bmiUnit: 'kg / m²' },
+  concepts: { heightUuid: '5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', weightUuid: '5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' },
 };
 
 const mockAttach = attach as jest.Mock;
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
 const mockUseConfig = useConfig as jest.Mock;
-mockUseConfig.mockImplementation(() => mockVitalsConfig);
+const mockOpenmrsFetch = openmrsFetch as jest.Mock;
+mockUseConfig.mockImplementation(() => mockBiometricsConfig);
 mockOpenmrsFetch.mockImplementation(jest.fn());
 
-function renderVitalsOverview() {
-  render(<VitalsOverview {...testProps} />);
+const testProps = {
+  showAddBiometrics: true,
+  patientUuid: mockPatient.id,
+};
+
+function renderBiometricsOverview() {
+  render(<BiometricsOverview {...testProps} />);
 }
 
-describe('VitalsOverview: ', () => {
-  it('renders an empty state view if vitals data is unavailable', async () => {
+describe('BiometricsOverview: ', () => {
+  it('renders an empty state view if biometrics data is unavailable', async () => {
     cache.clear();
     mockOpenmrsFetch.mockReturnValueOnce({ data: [] });
-    renderVitalsOverview();
+    renderBiometricsOverview();
 
     await waitForLoadingToFinish();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /vitals/i })).toBeInTheDocument();
-    expect(screen.getByText(/There are no vital signs to display for this patient/i)).toBeInTheDocument();
-    expect(screen.getByText(/Record vital signs/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /biometrics/i })).toBeInTheDocument();
+    expect(screen.getByText(/There are no biometrics to display for this patient/i)).toBeInTheDocument();
+    expect(screen.getByText(/Record biometrics/i)).toBeInTheDocument();
   });
 
-  it('renders an error state view if there is a problem fetching allergies data', async () => {
+  it('renders an error state view if there is a problem fetching biometrics data', async () => {
     const error = {
       message: 'You are not logged in',
       response: {
@@ -46,11 +51,11 @@ describe('VitalsOverview: ', () => {
 
     cache.clear();
     mockOpenmrsFetch.mockRejectedValueOnce(error);
-    renderVitalsOverview();
+    renderBiometricsOverview();
 
     await waitForLoadingToFinish();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /vitals/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /biometrics/i })).toBeInTheDocument();
     expect(screen.getByText(/Error 401: Unauthorized/i)).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -61,24 +66,26 @@ describe('VitalsOverview: ', () => {
 
   it("renders an overview of the patient's vital signs", async () => {
     cache.clear();
-    mockOpenmrsFetch.mockReturnValueOnce({ data: mockFhirVitalsResponse });
-    renderVitalsOverview();
+    mockOpenmrsFetch.mockReturnValueOnce({ data: mockBiometricsResponse });
+    renderBiometricsOverview();
 
     await waitForLoadingToFinish();
-    expect(screen.getByRole('heading', { name: /vitals/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /biometrics/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /table view/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /chart view/i })).toBeInTheDocument();
 
-    const expectedColumnHeaders = [/date/, /bp/, /r. rate/, /pulse/, /spO2/, /temp/];
+    const expectedColumnHeaders = [/date/, /weight/, /height/, /bmi/];
 
     expectedColumnHeaders.map((header) =>
       expect(screen.getByRole('columnheader', { name: new RegExp(header, 'i') })).toBeInTheDocument(),
     );
 
     const expectedTableRows = [
-      /19 - May - 2021 121 \/ 89 12 76 37/,
-      /10 - May - 2021 120 \/ 90 45 66 90 37/,
-      /07 - May - 2021 120 \/ 80/,
+      /18 - Jun - 2021 80 198 20.4/,
+      /10 - Jun - 2021 50/,
+      /26 - May - 2021 61 160 23.8/,
+      /10 - May - 2021 90 198 23.0/,
+      /08 - Apr - 2021 67 172 22.6/,
     ];
 
     expectedTableRows.map((row) => expect(screen.getByRole('row', { name: new RegExp(row, 'i') })).toBeInTheDocument());

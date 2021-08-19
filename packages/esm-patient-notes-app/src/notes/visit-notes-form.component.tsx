@@ -1,5 +1,6 @@
 import React, { SyntheticEvent } from 'react';
 import dayjs from 'dayjs';
+import { mutate } from 'swr';
 import debounce from 'lodash-es/debounce';
 import styles from './visit-notes-form.scss';
 import Button from 'carbon-components-react/es/components/Button';
@@ -15,8 +16,8 @@ import { Tile } from 'carbon-components-react/es/components/Tile';
 import { useTranslation } from 'react-i18next';
 import { Column, Grid, Row } from 'carbon-components-react/es/components/Grid';
 import { createErrorHandler, showNotification, showToast, useConfig, useSessionUser } from '@openmrs/esm-framework';
-import { convertToObsPayload, Diagnosis, VisitNotePayload } from './visit-note.util';
 import { fetchDiagnosisByName, fetchLocationByUuid, fetchProviderByUuid, saveVisitNote } from './visit-notes.resource';
+import { convertToObsPayload, Diagnosis, VisitNotePayload } from './visit-note.util';
 import { ConfigObject } from '../config-schema';
 const searchTimeoutInMs = 500;
 
@@ -238,6 +239,10 @@ const VisitNotesForm: React.FC<VisitNotesFormProps> = ({ patientUuid, closeWorks
       saveVisitNote(ac, visitNotePayload)
         .then((response) => {
           if (response.status === 201) {
+            mutate(
+              `/ws/rest/v1/encounter?patient=${patientUuid}&v=custom:(uuid,display,encounterDatetime,location:(uuid,display,name),encounterType:(name,uuid),auditInfo:(creator:(display),changedBy:(display)),encounterProviders:(provider:(person:(display))))`,
+            );
+
             closeWorkspace();
 
             showToast({

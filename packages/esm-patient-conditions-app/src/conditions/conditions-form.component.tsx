@@ -1,8 +1,16 @@
 import React, { SyntheticEvent } from 'react';
 import dayjs from 'dayjs';
 import debounce from 'lodash-es/debounce';
+import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { createErrorHandler, detach, showNotification, showToast, useSessionUser } from '@openmrs/esm-framework';
+import {
+  createErrorHandler,
+  detach,
+  fhirBaseUrl,
+  showNotification,
+  showToast,
+  useSessionUser,
+} from '@openmrs/esm-framework';
 import Button from 'carbon-components-react/es/components/Button';
 import DatePicker from 'carbon-components-react/es/components/DatePicker';
 import DatePickerInput from 'carbon-components-react/es/components/DatePickerInput';
@@ -13,7 +21,8 @@ import RadioButtonGroup from 'carbon-components-react/es/components/RadioButtonG
 import Search from 'carbon-components-react/es/components/Search';
 import SearchSkeleton from 'carbon-components-react/es/components/Search/Search.Skeleton';
 import { Tile } from 'carbon-components-react/es/components/Tile';
-import { searchConditionConcepts, createPatientCondition, CodedCondition } from './conditions.resource';
+import { searchConditionConcepts, createPatientCondition, useConditions } from './conditions.resource';
+import { CodedCondition } from '../types';
 import styles from './conditions-form.scss';
 const searchTimeoutInMs = 500;
 
@@ -100,6 +109,7 @@ const ConditionsForm: React.FC<ConditionsFormProps> = ({ patientUuid, isTablet }
   const [endDate, setEndDate] = React.useState(null);
   const [onsetDate, setOnsetDate] = React.useState(new Date());
   const [viewState, dispatch] = React.useReducer(viewStateReducer, initialViewState);
+  const { data: conditions } = useConditions(patientUuid);
 
   const handleSearchChange = (event) => {
     const query = event.target.value.trim();
@@ -197,6 +207,8 @@ const ConditionsForm: React.FC<ConditionsFormProps> = ({ patientUuid, isTablet }
       const sub = createPatientCondition(payload, abortController).subscribe(
         (response) => {
           if (response.status === 201) {
+            mutate(`${fhirBaseUrl}/Condition`);
+
             closeWorkspace();
 
             showToast({

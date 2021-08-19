@@ -1,76 +1,47 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import PatientBanner from './patient-banner.component';
-import { openmrsObservableFetch, openmrsFetch, useVisit, age } from '@openmrs/esm-framework';
-import { mockCurrentVisit, mockVisits } from '../../../../__mocks__/visits.mock';
-import { of } from 'rxjs';
+import { render, screen } from '@testing-library/react';
+import { age } from '@openmrs/esm-framework';
 import { mockPatient } from '../../../../__mocks__/patient.mock';
+import PatientBanner from './patient-banner.component';
+import userEvent from '@testing-library/user-event';
 
-const mockUseVisit = useVisit as jest.Mock;
-const mockOpenmrsObservableFetch = openmrsObservableFetch as jest.Mock;
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
 const mockAge = age as jest.Mock;
 
 jest.mock('@openmrs/esm-framework', () => ({
-  ...jest.requireActual('@openmrs/esm-framework/mock'),
-  useVisit: jest.fn(),
+  ...(jest.requireActual('@openmrs/esm-framework') as any),
   age: jest.fn(),
 }));
 
-jest.unmock('lodash');
-const lodash = jest.requireActual('lodash');
-lodash.capitalize = jest.fn().mockImplementation((s) => s.charAt(0).toUpperCase() + s.slice(1));
+const testProps = {
+  patient: mockPatient,
+  patientUuid: mockPatient.id,
+};
 
 function renderPatientBanner() {
-  mockAge.mockReturnValue('49 years');
-  mockUseVisit.mockReturnValue({ currentVisit: mockCurrentVisit, error: null });
-  mockOpenmrsObservableFetch.mockReturnValue(of(mockVisits));
-  mockOpenmrsFetch.mockReturnValue(Promise.resolve([]));
-  render(<PatientBanner patientUuid={mockPatient.id} patient={mockPatient} />);
+  render(<PatientBanner {...testProps} />);
 }
 
-function renderEmptyPatientBanner() {
-  mockAge.mockReturnValue('49 years');
-  mockUseVisit.mockReturnValue({
-    currentVisit: undefined,
-    error: null,
-  });
-  mockOpenmrsObservableFetch.mockReturnValue(of([]));
-  mockOpenmrsFetch.mockReturnValue(Promise.resolve([]));
-  render(<PatientBanner patientUuid={mockPatient.id} patient={mockPatient} />);
-}
-
-describe('<PatientBanner />', () => {
-  it("clicking the button toggles displaying the patient's contact details", () => {
+describe('PatientBanner: ', () => {
+  it(`renders the patient's avatar, name, identifiers, demographics, contact details and relationships when available`, async () => {
+    mockAge.mockReturnValueOnce('49 years');
     renderPatientBanner();
 
-    const showContactDetailsBtn = screen.getByRole('button', {
-      name: 'Show all details',
-    });
+    expect(screen.getByText(/John Wilson/i)).toBeInTheDocument();
+    expect(screen.getByText(/04 - Apr - 1972/i)).toBeInTheDocument();
+    expect(screen.getByText(/100732HE, 100GEJ/i)).toBeInTheDocument();
+    const showAllDetailsBtn = screen.getByRole('button', { name: /show all details/i });
+    expect(showAllDetailsBtn).toBeInTheDocument();
 
-    fireEvent.click(showContactDetailsBtn);
-
-    const hideContactDetailsBtn = screen.getByRole('button', {
-      name: 'Hide all details',
-    });
-    expect(hideContactDetailsBtn).toBeInTheDocument();
-    expect(screen.getByText('Address')).toBeInTheDocument();
-    expect(screen.getByText('Contact Details')).toBeInTheDocument();
-
-    fireEvent.click(hideContactDetailsBtn);
-
-    expect(showContactDetailsBtn).toBeInTheDocument();
-  });
-
-  it('should display the Active Visit tag when there is an active visit', () => {
-    renderPatientBanner();
-
-    expect(screen.queryByTitle('Active Visit')).toBeVisible();
-  });
-
-  it('should not display the Active Visit tag when there is not an active visit', () => {
-    renderEmptyPatientBanner();
-
-    expect(screen.queryByTitle('Active Visit')).toBeNull();
+    userEvent.click(showAllDetailsBtn);
+    await screen.findByText(/hide all details/i);
+    expect(screen.getByLabelText(/toggle contact details/i)).toBeInTheDocument();
+    expect(screen.getByText(/address/i)).toBeInTheDocument();
+    expect(screen.getByText(/60351/i)).toBeInTheDocument();
+    expect(screen.getByText(/City0351/i)).toBeInTheDocument();
+    expect(screen.getByText(/State0351tested/i)).toBeInTheDocument();
+    expect(screen.getByText(/Country0351/i)).toBeInTheDocument();
+    expect(screen.getByText(/contact details/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+25467388299499/i)).toBeInTheDocument();
+    expect(screen.getByText(/relationships/i)).toBeInTheDocument();
   });
 });

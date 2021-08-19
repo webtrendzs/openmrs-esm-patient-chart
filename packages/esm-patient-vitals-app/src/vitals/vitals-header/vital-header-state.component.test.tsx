@@ -5,8 +5,9 @@ import isToday from 'dayjs/plugin/isToday';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import VitalHeader from './vital-header-state.component';
-import { performPatientsVitalsSearch } from '../vitals-biometrics.resource';
+import { performPatientsVitalsSearch, useVitalsConceptMetadata } from '../vitals.resource';
 import { mockPatient } from '../../../../../__mocks__/patient.mock';
+import { useConfig } from '@openmrs/esm-framework';
 dayjs.extend(isToday);
 
 const mockVitalsConfig = {
@@ -25,47 +26,47 @@ const mockVitalsConfig = {
   },
 };
 
+const mockVitals = [
+  {
+    id: 'bca4d5f1-ee6a-4282-a5ff-c8db12c4247c',
+    date: '2020-11-27T09:06:13.000+00:00',
+    systolic: 120,
+    diastolic: 80,
+    temperature: 36.5,
+    oxygenSaturation: 88,
+    weight: 85,
+    height: 185,
+    bmi: '24.8',
+    respiratoryRate: 45,
+  },
+];
+
 const mockPerformPatientsVitalSearch = performPatientsVitalsSearch as jest.Mock;
+const mockUseVitalsConceptMetadata = useVitalsConceptMetadata as jest.Mock;
+const mockUseConfig = useConfig as jest.Mock;
+mockUseConfig.mockImplementation(() => mockVitalsConfig);
 
-jest.mock('../vitals-biometrics.resource', () => ({
+jest.mock('../vitals.resource', () => ({
+  ...(jest.requireActual('../vitals.resource') as any),
   performPatientsVitalsSearch: jest.fn(),
-}));
-
-jest.mock('@openmrs/esm-framework', () => ({
-  useConfig: jest.fn(() => mockVitalsConfig),
-}));
-
-jest.mock('../vitals-biometrics-form/use-vitalsigns', () => ({
-  useVitalsSignsConceptMetaData: jest.fn().mockReturnValue({
+  useVitalsSignsConceptMetaData: jest.fn().mockImplementation(() => ({
     conceptsUnits: ['mmHg', 'mmHg', '°C', 'cm', 'kg', 'beats/min', '%', 'cm', null],
-  }),
+  })),
 }));
 
-describe('<VitalHeader/>', () => {
-  const mockVitals = [
-    {
-      id: 'bca4d5f1-ee6a-4282-a5ff-c8db12c4247c',
-      date: '2020-11-27T09:06:13.000+00:00',
-      systolic: 120,
-      diastolic: 80,
-      temperature: 36.5,
-      oxygenSaturation: 88,
-      weight: 85,
-      height: 185,
-      bmi: '24.8',
-      respiratoryRate: 45,
-    },
-  ];
+const testProps = {
+  patientUuid: mockPatient.id,
+  showRecordVitals: true,
+};
 
-  const testProps = {
-    patientUuid: mockPatient.id,
-    showRecordVitals: true,
-  };
+function renderVitalsHeaderState() {
+  render(<VitalHeader {...testProps} />);
+}
 
-  it('should display default vital header', () => {
+describe('VitalsHeaderState: ', () => {
+  it('renders the vitals header', () => {
     mockPerformPatientsVitalSearch.mockReturnValue(of(mockVitals));
-
-    render(<VitalHeader {...testProps} />);
+    renderVitalsHeaderState();
 
     expect(screen.getByText(/Vitals & Biometrics/i)).toBeInTheDocument();
     expect(screen.getByText(/Last recorded: 27 - Nov - 2020/i)).toBeInTheDocument();
@@ -73,9 +74,7 @@ describe('<VitalHeader/>', () => {
     expect(screen.getByText(/Record Vitals/)).toBeInTheDocument();
     expect(screen.queryByText(/Temp/i)).not.toBeInTheDocument();
     const chevronDown = screen.getByTitle(/ChevronDown/);
-
     userEvent.click(chevronDown);
-
     expect(screen.getByText(/Temp/i)).toBeInTheDocument();
     expect(screen.getByText(/Heart Rate/i)).toBeInTheDocument();
     expect(screen.getByText(/SPO2/i)).toBeInTheDocument();

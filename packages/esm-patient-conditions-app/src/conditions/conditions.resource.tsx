@@ -1,36 +1,43 @@
-import { openmrsObservableFetch, fhirBaseUrl } from '@openmrs/esm-framework';
+import useSWR from 'swr';
 import { map } from 'rxjs/operators';
-import { FHIRCondition } from '../types';
+import { fhirBaseUrl, openmrsFetch, openmrsObservableFetch } from '@openmrs/esm-framework';
+import { CodedCondition, Condition, ConditionsFetchResponse, FhirCondition } from '../types';
 
-export function performPatientConditionsSearch(patientIdentifier: string) {
-  return openmrsObservableFetch<Array<Condition>>(
+export function useConditions(patientIdentifier: string) {
+  const { data, error, isValidating } = useSWR<{ data: ConditionsFetchResponse }, Error>(
     `${fhirBaseUrl}/Condition?patient.identifier=${patientIdentifier}`,
-  ).pipe(
-    map(({ data }) => data['entry']),
-    map((entries) => entries?.map((entry) => entry.resource) ?? []),
-    map((data) => formatConditions(data)),
-    map((data) => data.sort((a, b) => (b?.onsetDateTime > a?.onsetDateTime ? 1 : -1))),
+    openmrsFetch,
   );
+
+  const formattedConditions =
+    data?.data.total > 0
+      ? data?.data.entry
+          .map((entry) => entry.resource ?? [])
+          .map(mapConditionProperties)
+          .sort((a, b) => (b?.onsetDateTime > a?.onsetDateTime ? 1 : -1))
+      : null;
+
+  return {
+    data: data ? formattedConditions : null,
+    isError: error,
+    isLoading: !data && !error,
+    isValidating: isValidating,
+  };
 }
 
 export function searchConditionConcepts(searchTerm: string) {
-  return openmrsObservableFetch<Array<CodedCondition>>(
+  return openmrsObservableFetch<{ results: Array<CodedCondition> }>(
     `/ws/rest/v1/conceptsearch?conceptClasses=8d4918b0-c2cc-11de-8d13-0010c6dffd0f&q=${searchTerm}`,
-  ).pipe(map(({ data }) => data['results']));
+  ).pipe(map(({ data }) => data.results));
 }
 
 export function getConditionByUuid(conditionUuid: string) {
-  return openmrsObservableFetch(`${fhirBaseUrl}/Condition/${conditionUuid}`).pipe(
-    map(({ data }) => data),
-    map((data: FHIRCondition) => mapConditionProperties(data)),
+  return openmrsObservableFetch<{ data: FhirCondition }>(`${fhirBaseUrl}/Condition/${conditionUuid}`).pipe(
+    map(({ data }) => mapConditionProperties(data.data)),
   );
 }
 
-function formatConditions(conditions: Array<FHIRCondition>): Array<Condition> {
-  return conditions.map(mapConditionProperties);
-}
-
-function mapConditionProperties(condition: FHIRCondition): Condition {
+export function mapConditionProperties(condition: FhirCondition): Condition {
   return {
     clinicalStatus: condition?.clinicalStatus?.coding[0]?.code,
     conceptId: condition?.code?.coding[0]?.code,
@@ -51,28 +58,3 @@ export function createPatientCondition(payload, abortController) {
     signal: abortController,
   });
 }
-
-export function updatePatientCondition(patientCondition, patientUuid, abortController) {
-  return Promise.resolve({ status: 200, body: 'Ok' });
-}
-
-export type Condition = {
-  clinicalStatus: string;
-  conceptId: string;
-  display: string;
-  onsetDateTime: string;
-  recordedDate: string;
-  id: string;
-};
-
-export type CodedCondition = {
-  concept: {
-    uuid: string;
-    display: string;
-  };
-  conceptName: {
-    uuid: string;
-    display: string;
-  };
-  display: string;
-};

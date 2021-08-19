@@ -1,13 +1,12 @@
 import React from 'react';
+import { cache } from 'swr';
+import { screen } from '@testing-library/react';
 import ContactDetails from './contact-details.component';
-import { render, screen } from '@testing-library/react';
-import { fetchPatientRelationships } from './relationships.resource';
+import { openmrsFetch } from '@openmrs/esm-framework';
+import { render, waitForLoadingToFinish } from '../../../../tools/app-test-utils';
 
-const mockFetchPatientRelationships = fetchPatientRelationships as jest.Mock;
-
-jest.mock('./relationships.resource', () => ({
-  fetchPatientRelationships: jest.fn(),
-}));
+const mockOpenmrsFetch = openmrsFetch as jest.Mock;
+mockOpenmrsFetch.mockImplementation(jest.fn());
 
 const testProps = {
   address: [
@@ -28,9 +27,11 @@ function renderContactDetails() {
   render(<ContactDetails {...testProps} />);
 }
 
-it("displays the patient's contact details", async () => {
-  mockFetchPatientRelationships.mockReturnValue(
-    Promise.resolve({
+describe('ContactDetails: ', () => {
+  it("displays the patient's relationships and contact details", async () => {
+    cache.clear();
+
+    mockOpenmrsFetch.mockResolvedValueOnce({
       data: {
         results: [
           {
@@ -43,15 +44,17 @@ it("displays the patient's contact details", async () => {
           },
         ],
       },
-    }),
-  );
+    });
 
-  renderContactDetails();
+    renderContactDetails();
 
-  await screen.findByText('Relationships');
-  expect(screen.getByText('Address')).toBeInTheDocument();
-  expect(screen.getByText('Contact Details')).toBeInTheDocument();
-  expect(screen.getByText('Relationships')).toBeInTheDocument();
-  expect(screen.getByText('Amanda Testerson')).toBeInTheDocument();
-  expect(screen.getByText(/Cousin/i)).toBeInTheDocument();
+    await waitForLoadingToFinish();
+
+    expect(screen.getByText('Relationships'));
+    expect(screen.getByText('Address')).toBeInTheDocument();
+    expect(screen.getByText('Contact Details')).toBeInTheDocument();
+    expect(screen.getByText('Relationships')).toBeInTheDocument();
+    expect(screen.getByText('Amanda Testerson')).toBeInTheDocument();
+    expect(screen.getByText(/Cousin/i)).toBeInTheDocument();
+  });
 });

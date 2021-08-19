@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './allergy-form.component.scss';
 import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
 import Button from 'carbon-components-react/es/components/Button';
 import RadioButtonGroup from 'carbon-components-react/es/components/RadioButtonGroup';
 import RadioButton from 'carbon-components-react/es/components/RadioButton';
@@ -10,7 +10,7 @@ import TextArea from 'carbon-components-react/es/components/TextArea';
 import Checkbox from 'carbon-components-react/es/components/Checkbox';
 import Tabs from 'carbon-components-react/es/components/Tabs';
 import Tab from 'carbon-components-react/es/components/Tab';
-import { createErrorHandler, showNotification, showToast, useConfig } from '@openmrs/esm-framework';
+import { createErrorHandler, fhirBaseUrl, showNotification, showToast, useConfig } from '@openmrs/esm-framework';
 import { AllergiesConfigObject } from '../../config-schema';
 import { fetchAllergensAndReaction, savePatientAllergy } from './allergy-form.resource';
 import AllergyFormTab from './allergy-form-tab.component';
@@ -18,6 +18,7 @@ import SearchSkeleton from 'carbon-components-react/lib/components/Search/Search
 import TextInput from 'carbon-components-react/lib/components/TextInput/TextInput';
 import { OpenMRSResource } from '../../types';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
+import styles from './allergy-form.component.scss';
 
 enum StateTypes {
   PENDING = 'pending',
@@ -158,6 +159,8 @@ const AllergyForm: React.FC<AllergyFormProps> = ({ isTablet, closeWorkspace, pat
     const ac = new AbortController();
     savePatientAllergy(restApiPayLoad, patientUuid, ac).then((response) => {
       if (response.status === 201) {
+        mutate(`${fhirBaseUrl}/AllergyIntolerance`);
+
         closeWorkspace();
 
         showToast({

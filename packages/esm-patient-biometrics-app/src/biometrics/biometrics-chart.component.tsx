@@ -8,6 +8,7 @@ import { LineChartOptions } from '@carbon/charts/interfaces/charts';
 import { ScaleTypes } from '@carbon/charts/interfaces/enums';
 import { useConfig } from '@openmrs/esm-framework';
 import { PatientBiometrics } from './biometrics-overview.component';
+import { useTranslation } from 'react-i18next';
 
 interface BiometricsChartProps {
   patientBiometrics: Array<PatientBiometrics>;
@@ -24,6 +25,7 @@ const chartColors = { weight: '#6929c4', height: '#6929c4', bmi: '#6929c4' };
 
 const BiometricsChart: React.FC<BiometricsChartProps> = ({ patientBiometrics, conceptsUnits }) => {
   const config = useConfig();
+  const { t } = useTranslation();
   const { bmiUnit } = config.biometrics;
   const [, , , heightUnit, weightUnit] = conceptsUnits;
   const [selectedBiometrics, setSelectedBiometrics] = React.useState<BiometricChartData>({
@@ -73,7 +75,7 @@ const BiometricsChart: React.FC<BiometricsChartProps> = ({ patientBiometrics, co
     <div className={styles.biometricChartContainer}>
       <div className={styles.biometricSignsArea}>
         <label className={styles.biometricSign} htmlFor="biometrics-chart-radio-group">
-          Biometric Displayed
+          {t('biometricDisplayed', 'Biometric Displayed')}
         </label>
         <RadioButtonGroup
           defaultSelected="weight"
@@ -82,9 +84,9 @@ const BiometricsChart: React.FC<BiometricsChartProps> = ({ patientBiometrics, co
           orientation="vertical"
           labelPosition="right">
           {[
-            { id: 'weight', label: `Weight (${weightUnit})` },
-            { id: 'height', label: `Height (${heightUnit})` },
-            { id: 'bmi', label: `BMI (${bmiUnit})` },
+            { id: 'weight', label: `${t('weight', 'Weight')} (${weightUnit})` },
+            { id: 'height', label: `${t('height', 'Height')} (${heightUnit})` },
+            { id: 'bmi', label: `${t('bmi', 'BMI')} (${bmiUnit})` },
           ].map(({ id, label }) => (
             <RadioButton
               key={id}

@@ -5,10 +5,9 @@ import ChevronDown16 from '@carbon/icons-react/es/chevron--down/16';
 import ChevronUp16 from '@carbon/icons-react/es/chevron--up/16';
 import dayjs from 'dayjs';
 import Button from 'carbon-components-react/es/components/Button';
-import isEmpty from 'lodash-es/isEmpty';
 import { useTranslation } from 'react-i18next';
 import { attach } from '@openmrs/esm-framework';
-import { PatientVitals } from '../vitals-biometrics.resource';
+import { PatientVitals } from '../vitals.resource';
 import { patientVitalsBiometricsFormWorkspace } from '../../constants';
 
 interface VitalsHeaderStateTitleProps {

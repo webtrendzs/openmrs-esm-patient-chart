@@ -1,13 +1,14 @@
-import { openmrsObservableFetch, openmrsFetch, fhirBaseUrl, FHIRResource } from '@openmrs/esm-framework';
+import useSWR from 'swr';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PatientVitalAndBiometric } from './vitals-biometrics-form/vitals-biometrics-form.component';
+import { openmrsObservableFetch, openmrsFetch, fhirBaseUrl, FHIRResource, useConfig } from '@openmrs/esm-framework';
 import { calculateBMI } from './vitals-biometrics-form/vitals-biometrics-form.utils';
 import { ConfigObject } from '../config-schema';
 
 export interface PatientVitals {
   id: string;
-  date: Date;
+  date: Date | string;
   systolic?: string;
   diastolic?: string;
   pulse?: string;
@@ -20,7 +21,9 @@ export interface PatientVitals {
 }
 
 interface VitalsFetchResponse {
-  entry: Array<FHIRResource>;
+  entry: Array<{
+    resource: any;
+  }>;
   id: string;
   meta: {
     lastUpdated: string;
@@ -37,6 +40,74 @@ interface ObsRecord {
 
 function filterByConceptUuid(vitals: Array<FHIRResource['resource']>, conceptUuid: string) {
   return vitals.filter((obs) => obs.code.coding.some((c) => c.code === conceptUuid));
+}
+
+export function useVitals(patientUuid: string) {
+  const pageSize = 100;
+  const config = useConfig();
+  const vitalsConcepts = {
+    systolicBloodPressure: config.concepts.systolicBloodPressureUuid,
+    diastolicBloodPressure: config.concepts.diastolicBloodPressureUuid,
+    pulse: config.concepts.pulseUuid,
+    temperature: config.concepts.temperatureUuid,
+    oxygenSaturation: config.concepts.oxygenSaturationUuid,
+    height: config.concepts.heightUuid,
+    weight: config.concepts.weightUuid,
+    respiratoryRate: config.concepts.respiratoryRateUuid,
+  };
+
+  const { data, error } = useSWR<{ data: VitalsFetchResponse }, Error>(
+    `${fhirBaseUrl}/Observation?subject:Patient=${patientUuid}&code=` +
+      Object.values(vitalsConcepts).join(',') +
+      '&_summary=data&_sort=-date' +
+      `&_count=${pageSize}
+  `,
+    openmrsFetch,
+  );
+
+  const observations = data?.data?.total > 0 ? data.data?.entry?.map((entry) => entry.resource ?? []) : null;
+  const systolicBloodPressureData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.systolicBloodPressureUuid),
+  );
+  const diastolicBloodPressureData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.diastolicBloodPressureUuid),
+  );
+  const pulseData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.pulseUuid),
+  );
+  const temperatureData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.temperatureUuid),
+  );
+  const oxygenSaturationData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.oxygenSaturationUuid),
+  );
+  const heightData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.heightUuid),
+  );
+  const weightData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.weightUuid),
+  );
+  const respiratoryRateData = observations?.filter((obs) =>
+    obs.code.coding.some((sys) => sys.code === config.concepts.respiratoryRateUuid),
+  );
+
+  return {
+    data:
+      data?.data?.total > 0
+        ? formatVitals(
+            systolicBloodPressureData,
+            diastolicBloodPressureData,
+            pulseData,
+            temperatureData,
+            oxygenSaturationData,
+            heightData,
+            weightData,
+            respiratoryRateData,
+          )
+        : null,
+    isError: error,
+    isLoading: !data && !error,
+  };
 }
 
 export function performPatientsVitalsSearch(
@@ -90,7 +161,6 @@ function formatVitals(
   weightData: Vitals,
   respiratoryRateData: Vitals,
 ): Array<PatientVitals> {
-  let patientVitals: PatientVitals;
   const systolicDates = getDatesIssued(systolicBloodPressure);
   const diastolicDates = getDatesIssued(diastolicBloodPressure);
 
@@ -105,7 +175,7 @@ function formatVitals(
     const height = heightData.find((height) => height.issued === date);
     const weight = weightData.find((weight) => weight.issued === date);
     const respiratoryRate = respiratoryRateData.find((respiratoryRate) => respiratoryRate.issued === date);
-    return (patientVitals = {
+    return {
       id: systolic?.encounter?.reference.replace('Encounter/', ''),
       date: systolic?.issued,
       systolic: systolic?.valueQuantity?.value,
@@ -117,7 +187,7 @@ function formatVitals(
       height: height?.valueQuantity?.value,
       bmi: weight && height ? calculateBMI(weight.valueQuantity.value, height.valueQuantity.value) : null,
       respiratoryRate: respiratoryRate?.valueQuantity?.value,
-    });
+    };
   });
 }
 
@@ -197,4 +267,42 @@ export function editPatientVitals(
       orders: [],
     },
   });
+}
+
+export function useVitalsConceptMetadata() {
+  const customRepresentation = `?q=VITALS SIGNS&v=custom:(setMembers:(uuid,display,hiNormal,hiAbsolute,hiCritical,lowNormal,lowAbsolute,lowCritical,units))`;
+  const { data, error } = useSWR<{ data: VitalsConceptMetadataResponse }, Error>(
+    `/ws/rest/v1/concept/${customRepresentation}`,
+    openmrsFetch,
+  );
+
+  const conceptUnits = data?.data?.results[0]?.setMembers.map((conceptUnit) => conceptUnit.units);
+
+  return {
+    data: data ? { conceptUnits: conceptUnits, metadata: data?.data?.results[0]?.setMembers } : null,
+    isError: error,
+    isLoading: !data && !error,
+  };
+}
+
+export const withUnit = (label: string, unit: string | null | undefined) => {
+  return `${label} ${unit ? `(${unit})` : ''}`;
+};
+
+export interface ConceptMetadata {
+  uuid: string;
+  display: string;
+  hiNormal: number | string | null;
+  hiAbsolute: number | string | null;
+  hiCritical: number | string | null;
+  lowNormal: number | string | null;
+  lowAbsolute: number | string | null;
+  lowCritical: number | string | null;
+  units: string | null;
+}
+
+interface VitalsConceptMetadataResponse {
+  results: Array<{
+    setMembers: Array<ConceptMetadata>;
+  }>;
 }

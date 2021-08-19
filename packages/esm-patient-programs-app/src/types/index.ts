@@ -1,3 +1,7 @@
+export interface ProgramsFetchResponse {
+  results: Array<PatientProgram>;
+}
+
 export interface PatientProgram {
   uuid: string;
   patient?: DisplayMetadata;
@@ -14,8 +18,8 @@ export interface PatientProgram {
     links: Links;
   };
   display: string;
-  dateEnrolled: Date;
-  dateCompleted: Date | null;
+  dateEnrolled: string;
+  dateCompleted: string | null;
   location?: {
     uuid: string;
     display: string;

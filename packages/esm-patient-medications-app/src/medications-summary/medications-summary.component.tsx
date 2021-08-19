@@ -12,12 +12,22 @@ export interface MedicationsSummaryProps {
 
 export default function MedicationsSummary({ patientUuid }: MedicationsSummaryProps) {
   const { t } = useTranslation();
-  const [activePatientOrders] = usePatientOrders(patientUuid, 'ACTIVE');
-  const [pastPatientOrders] = usePatientOrders(patientUuid, 'any');
+  const {
+    data: activePatientOrders,
+    isLoading: isLoadingActiveOrders,
+    isError: isErrorActiveOrders,
+  } = usePatientOrders(patientUuid, 'ACTIVE');
+
+  const {
+    data: pastPatientOrders,
+    isLoading: isLoadingPastOrders,
+    isError: isErrorPastOrders,
+  } = usePatientOrders(patientUuid, 'ACTIVE');
 
   return (
     <>
       <h1 className={styles.productiveHeading03}>{t('medications', 'Medications')}</h1>
+      {isLoadingActiveOrders ? <DataTableSkeleton /> : null}
       {activePatientOrders ? (
         <MedicationsDetailsTable
           title={t('activeMedications', 'Active Medications')}
@@ -27,10 +37,9 @@ export default function MedicationsSummary({ patientUuid }: MedicationsSummaryPr
           showReorderButton={false}
           showAddNewButton={false}
         />
-      ) : (
-        <DataTableSkeleton />
-      )}
+      ) : null}
       <div style={{ marginTop: '3rem' }}>
+        {isLoadingPastOrders ? <DataTableSkeleton /> : null}
         {pastPatientOrders ? (
           <MedicationsDetailsTable
             title={t('pastMedications', 'Past Medications')}
@@ -40,9 +49,7 @@ export default function MedicationsSummary({ patientUuid }: MedicationsSummaryPr
             showReorderButton={true}
             showAddNewButton={false}
           />
-        ) : (
-          <DataTableSkeleton />
-        )}
+        ) : null}
       </div>
       <FloatingOrderBasketButton />
     </>

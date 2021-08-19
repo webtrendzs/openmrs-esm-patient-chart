@@ -17,6 +17,8 @@ import { orderDrugs } from './drug-ordering';
 import { connect } from 'unistore/react';
 import { OrderBasketStore, OrderBasketStoreActions, orderBasketStoreActions } from '../medications/order-basket-store';
 import { usePatientOrders } from '../utils/use-current-patient-orders.hook';
+import { mutate } from 'swr';
+import { careSetting } from '../constants';
 
 export interface OrderBasketProps {
   patientUuid: string;
@@ -43,7 +45,11 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
     const [isMedicationOrderFormVisible, setIsMedicationOrderFormVisible] = useState(false);
     const [onMedicationOrderFormSigned, setOnMedicationOrderFormSign] =
       useState<(finalizedOrderBasketItem: OrderBasketItem) => void | null>(null);
-    const [activePatientOrders, fetchActivePatientOrders] = usePatientOrders(patientUuid, 'ACTIVE');
+    const {
+      data: activePatientOrders,
+      isLoading: isLoadingPatientOrders,
+      isError: isErrorPatientOrders,
+    } = usePatientOrders(patientUuid, 'ACTIVE');
 
     useEffect(() => {
       const abortController = new AbortController();
@@ -82,7 +88,10 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
       const abortController = new AbortController();
       orderDrugs(items, patientUuid, abortController).then((erroredItems) => {
         setItems(erroredItems);
-        fetchActivePatientOrders();
+
+        mutate(
+          `/ws/rest/v1/order?patient=${patientUuid}&careSetting=${careSetting}&status=${status}&v=custom:(uuid,dosingType,orderNumber,accessionNumber,patient:ref,action,careSetting:ref,previousOrder:ref,dateActivated,scheduledDate,dateStopped,autoExpireDate,orderType:ref,encounter:ref,orderer:ref,orderReason,orderReasonNonCoded,orderType,urgency,instructions,commentToFulfiller,drug:(uuid,name,strength,dosageForm:(display,uuid),concept),dose,doseUnits:ref,frequency:ref,asNeeded,asNeededCondition,quantity,quantityUnits:ref,numRefills,dosingInstructions,duration,durationUnits:ref,route:ref,brandName,dispenseAsWritten)`,
+        );
 
         if (erroredItems.length == 0) {
           closeWorkspace();

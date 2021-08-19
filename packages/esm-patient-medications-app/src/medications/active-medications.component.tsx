@@ -17,12 +17,13 @@ interface ActiveMedicationsProps {
 
 const ActiveMedications: React.FC<ActiveMedicationsProps> = ({ patientUuid, showAddMedications }) => {
   const { t } = useTranslation();
-  const [activePatientOrders] = usePatientOrders(patientUuid, 'ACTIVE');
+  const { data: activePatientOrders, isLoading, isError } = usePatientOrders(patientUuid, 'ACTIVE');
 
   const launchOrderBasket = () => attach('patient-chart-workspace-slot', 'order-basket-workspace');
 
   return (
     <Provider store={orderBasketStore}>
+      {isLoading ? <DataTableSkeleton /> : null}
       {activePatientOrders ? (
         <div className={styles.activeMedicationContainer}>
           <div className={styles.activeMedicationHeader}>
@@ -42,9 +43,7 @@ const ActiveMedications: React.FC<ActiveMedicationsProps> = ({ patientUuid, show
             showAddNewButton={false}
           />
         </div>
-      ) : (
-        <DataTableSkeleton />
-      )}
+      ) : null}
     </Provider>
   );
 };

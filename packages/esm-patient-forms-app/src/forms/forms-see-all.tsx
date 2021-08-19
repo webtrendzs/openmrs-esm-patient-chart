@@ -6,7 +6,7 @@ import FormView from './form-view-see-all.component';
 import styles from './forms.component.scss';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { useTranslation } from 'react-i18next';
-import { toFormObject } from './forms.resource';
+import { mapToFormObject } from './forms.resource';
 import { filterAvailableAndCompletedForms } from './forms-utils';
 import { Form } from '../types';
 import EmptyFormView from './empty-form.component';
@@ -48,7 +48,7 @@ const Forms: FunctionComponent<FormsProps> = ({ patientUuid, patient, pageSize, 
         method: 'GET',
       },
     );
-    return searchResult.data.results.map((form) => toFormObject(form));
+    return searchResult.data.results.map((form) => mapToFormObject(form));
   }
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const Forms: FunctionComponent<FormsProps> = ({ patientUuid, patient, pageSize, 
       encounterDateTime: new Date(openmrsRestEncounter.encounterDatetime),
       encounterTypeUuid: openmrsRestEncounter.encounterType ? openmrsRestEncounter.encounterType.uuid : null,
       encounterTypeName: openmrsRestEncounter.encounterType ? openmrsRestEncounter.encounterType.name : null,
-      form: openmrsRestEncounter.form ? toFormObject(openmrsRestEncounter.form) : null,
+      form: openmrsRestEncounter.form ? mapToFormObject(openmrsRestEncounter.form) : null,
       form_id: openmrsRestEncounter.form ? openmrsRestEncounter.form.uuid : null,
     };
   }

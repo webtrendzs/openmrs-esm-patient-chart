@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import isEmpty from 'lodash-es/isEmpty';
+import InlineLoading from 'carbon-components-react/es/components/InlineLoading';
 import VitalHeaderStateDetails from './vital-header-details.component';
 import VitalsHeaderStateTitle from './vital-header-title.component';
-import InlineLoading from 'carbon-components-react/es/components/InlineLoading';
-import styles from './vital-header-state.component.scss';
-import { useTranslation } from 'react-i18next';
 import { useConfig, createErrorHandler } from '@openmrs/esm-framework';
-import { PatientVitals, performPatientsVitalsSearch } from '../vitals-biometrics.resource';
-import { useVitalsSignsConceptMetaData } from '../vitals-biometrics-form/use-vitalsigns';
+import { PatientVitals, performPatientsVitalsSearch, useVitalsConceptMetadata } from '../vitals.resource';
+import styles from './vital-header-state.component.scss';
 
 interface ViewState {
   view: 'Default' | 'Warning';
@@ -26,22 +25,12 @@ const VitalHeader: React.FC<VitalHeaderProps> = ({ patientUuid, showRecordVitals
   const [displayState, setDisplayState] = useState<ViewState>({
     view: 'Default',
   });
+  const { data: conceptData } = useVitalsConceptMetadata();
+  const conceptUnits = conceptData ? conceptData.conceptUnits : null;
   const [showDetails, setShowDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const toggleView = () => setShowDetails((prevState) => !prevState);
   const cls = displayState.view === 'Warning' ? styles.warningBackground : styles.defaultBackground;
-  const { conceptsUnits } = useVitalsSignsConceptMetaData();
-  const [
-    bloodPressureUnit,
-    ,
-    temperatureUnit,
-    heightUnit,
-    weightUnit,
-    pulseUnit,
-    oxygenSaturationUnit,
-    ,
-    respiratoryRateUnit,
-  ] = conceptsUnits;
 
   useEffect(() => {
     if (patientUuid) {
@@ -79,34 +68,34 @@ const VitalHeader: React.FC<VitalHeaderProps> = ({ patientUuid, showRecordVitals
               <div className={styles.row}>
                 <VitalHeaderStateDetails
                   unitName={t('temperatureAbbreviated', 'Temp')}
-                  unitSymbol={temperatureUnit}
+                  unitSymbol={conceptUnits ? conceptUnits[2] : ''}
                   value={vital.temperature}
                 />
                 <VitalHeaderStateDetails
                   unitName={t('bp', 'BP')}
-                  unitSymbol={bloodPressureUnit}
+                  unitSymbol={conceptUnits ? conceptUnits[0] : ''}
                   value={`${vital.systolic} / ${vital.diastolic}`}
                 />
                 <VitalHeaderStateDetails
                   unitName={t('heartRate', 'Heart Rate')}
-                  unitSymbol={pulseUnit}
+                  unitSymbol={conceptUnits ? conceptUnits[5] : ''}
                   value={vital.pulse}
                 />
                 <VitalHeaderStateDetails
                   unitName={t('spo2', 'SpO2')}
-                  unitSymbol={oxygenSaturationUnit}
+                  unitSymbol={conceptUnits ? conceptUnits[6] : ''}
                   value={vital.oxygenSaturation}
                 />
               </div>
               <div className={styles.row}>
                 <VitalHeaderStateDetails
                   unitName={t('respiratoryRate', 'R. Rate')}
-                  unitSymbol={respiratoryRateUnit}
+                  unitSymbol={conceptUnits ? conceptUnits[8] : ''}
                   value={vital.respiratoryRate}
                 />
                 <VitalHeaderStateDetails
                   unitName={t('height', 'Height')}
-                  unitSymbol={heightUnit}
+                  unitSymbol={conceptUnits ? conceptUnits[3] : ''}
                   value={vital.height}
                 />
                 <VitalHeaderStateDetails
@@ -116,7 +105,7 @@ const VitalHeader: React.FC<VitalHeaderProps> = ({ patientUuid, showRecordVitals
                 />
                 <VitalHeaderStateDetails
                   unitName={t('weight', 'Weight')}
-                  unitSymbol={weightUnit}
+                  unitSymbol={conceptUnits ? conceptUnits[4] : ''}
                   value={vital.weight}
                 />
               </div>

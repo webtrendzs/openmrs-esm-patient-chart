@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styles from './vitals-chart.component.scss';
 import RadioButton from 'carbon-components-react/es/components/RadioButton';
 import RadioButtonGroup from 'carbon-components-react/es/components/RadioButtonGroup';
-import { withUnit } from './vitals-biometrics-form/use-vitalsigns';
-import { PatientVitals } from './vitals-biometrics.resource';
+import { PatientVitals, withUnit } from './vitals.resource';
 import { LineChart } from '@carbon/charts-react';
 import { LineChartOptions } from '@carbon/charts/interfaces/charts';
 import { ScaleTypes } from '@carbon/charts/interfaces/enums';
@@ -26,7 +25,7 @@ const VitalsChart: React.FC<VitalsChartProps> = ({ patientVitals, conceptsUnits 
   const [chartData, setChartData] = React.useState([]);
   const [bloodPressureUnit, , temperatureUnit, , , pulseUnit, oxygenSaturationUnit, , respiratoryRateUnit] =
     conceptsUnits;
-  const [selectedVitalSign, setSelecteVitalsSign] = React.useState<vitalsChartData>({
+  const [selectedVitalSign, setSelectedVitalSign] = React.useState<vitalsChartData>({
     title: `BP (${bloodPressureUnit})`,
     value: 'systolic',
   });
@@ -122,7 +121,7 @@ const VitalsChart: React.FC<VitalsChartProps> = ({ patientVitals, conceptsUnits 
               value={value}
               className={styles.vitalsSignsRadioButton}
               onClick={() =>
-                setSelecteVitalsSign({
+                setSelectedVitalSign({
                   title: title,
                   value: value,
                 })

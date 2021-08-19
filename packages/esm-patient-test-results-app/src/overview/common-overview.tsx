@@ -15,6 +15,7 @@ import TableToolbar from 'carbon-components-react/es/components/DataTable/TableT
 import { Card, headers, formatDate, InfoButton, Separator, TypedTableRow } from './helpers';
 import { OverviewPanelEntry, OverviewPanelData } from './useOverviewData';
 import { useTranslation } from 'react-i18next';
+import { EmptyState } from '../../../esm-patient-common-lib/src';
 
 export const CommonDataTable: React.FC<{
   data: Array<OverviewPanelData>;
@@ -94,8 +95,10 @@ const CommonOverview: React.FC<CommonOverviewProps> = ({
   deactivateToolbar = false,
 }) => {
   const { t } = useTranslation();
+  const emptyStateText = t('testResults', 'test results');
 
-  if (!overviewData.length) return <p>{t('no_tests', 'No tests found')}</p>;
+  if (!overviewData.length)
+    return <EmptyState displayText={emptyStateText} headerTitle={emptyStateText} launchForm={() => {}} />;
 
   return (
     <>

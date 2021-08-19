@@ -1,9 +1,8 @@
 import React from 'react';
-import InlineLoading from 'carbon-components-react/es/components/InlineLoading';
-import { createErrorHandler } from '@openmrs/esm-framework';
-import { fetchPatientRelationships, Relationship } from './relationships.resource';
-import styles from './contact-details.scss';
 import { useTranslation } from 'react-i18next';
+import InlineLoading from 'carbon-components-react/es/components/InlineLoading';
+import { useRelationships } from './relationships.resource';
+import styles from './contact-details.scss';
 
 const Address: React.FC<{ address: fhir.Address }> = ({ address }) => {
   const { t } = useTranslation();
@@ -36,46 +35,14 @@ const Contact: React.FC<{ telecom: Array<fhir.ContactPoint> }> = ({ telecom }) =
 };
 
 const Relationships: React.FC<{ patientId: string }> = ({ patientId }) => {
-  const [relationships, setRelationships] = React.useState<Array<ExtractedRelationship>>(null);
+  const { data: relationships, isLoading, isError } = useRelationships(patientId);
 
-  React.useEffect(() => {
-    function extractRelationshipData(relationships: Array<Relationship>): Array<ExtractedRelationship> {
-      const relationshipsData = [];
-      for (const r of relationships) {
-        if (patientId === r.personA.uuid) {
-          relationshipsData.push({
-            uuid: r.uuid,
-            display: r.personB.person.display,
-            relativeAge: r.personB.person.age,
-            relativeUuid: r.personB.uuid,
-            relationshipType: r.relationshipType.bIsToA,
-          });
-        } else {
-          relationshipsData.push({
-            uuid: r.uuid,
-            display: r.personA.person.display,
-            relativeAge: r.personA.person.age,
-            relativeUuid: r.personA.uuid,
-            relationshipType: r.relationshipType.aIsToB,
-          });
-        }
-      }
-      return relationshipsData;
-    }
-
-    fetchPatientRelationships(patientId)
-      .then(({ data: { results } }) => {
-        if (results.length) {
-          const relationships = extractRelationshipData(results);
-          setRelationships(relationships);
-        }
-      })
-      .catch(createErrorHandler());
-  }, [patientId]);
-
-  const RenderRelationships: React.FC = () => {
-    if (relationships.length) {
-      return (
+  return (
+    <div className={styles.col}>
+      <p className={styles.heading}>Relationships</p>
+      {isLoading ? <InlineLoading role="progressbar" description="Loading..." /> : null}
+      {isError ? <p>There was an error fetching relationships</p> : null}
+      {relationships?.length ? (
         <ul style={{ width: '50%' }}>
           {relationships.map((r) => (
             <li key={r.uuid} className={styles.relationship}>
@@ -85,18 +52,16 @@ const Relationships: React.FC<{ patientId: string }> = ({ patientId }) => {
             </li>
           ))}
         </ul>
-      );
-    }
-    return <p>-</p>;
-  };
-
-  return (
-    <div className={styles.col}>
-      <p className={styles.heading}>Relationships</p>
-      {relationships ? <RenderRelationships /> : <InlineLoading description="Loading..." />}
+      ) : null}
     </div>
   );
 };
+
+interface ContactDetailsProps {
+  address: Array<fhir.Address>;
+  telecom: Array<fhir.ContactPoint>;
+  patientId: string;
+}
 
 const ContactDetails: React.FC<ContactDetailsProps> = ({ address, telecom, patientId }) => {
   const currentAddress = address.find((a) => a.use === 'home');
@@ -115,17 +80,3 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ address, telecom, patie
 };
 
 export default ContactDetails;
-
-type ContactDetailsProps = {
-  address: Array<fhir.Address>;
-  telecom: Array<fhir.ContactPoint>;
-  patientId: string;
-};
-
-type ExtractedRelationship = {
-  uuid: string;
-  display: string;
-  relativeAge: number;
-  relativeUuid: string;
-  relationshipType: string;
-};

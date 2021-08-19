@@ -1,19 +1,29 @@
-export interface RESTPatientNote {
-  uuid: string;
-  display: string;
-  encounterDatetime: string;
-  location: { uuid: string; display: string; name: string };
-  encounterType: { name: string; uuid: string };
+export interface RestConditionsResponse {
+  results: Array<RestEncounter>;
+}
+export interface RestEncounter {
   auditInfo: {
-    creator: any;
+    creator: DisplayMetadata;
     uuid: string;
     display: string;
-    links: any;
+    links: Links;
     dateCreated: Date;
-    changedBy?: any;
     dateChanged?: Date;
   };
+  display: string;
+  encounterDatetime: string;
   encounterProviders: [{ provider: { person: { display: string } } }];
+  encounterType: { name: string; uuid: string };
+  location: { uuid: string; display: string; name: string };
+  uuid: string;
+}
+
+export interface Encounter {
+  id: string;
+  encounterAuthor?: string;
+  encounterDate: string;
+  encounterType: string;
+  encounterLocation: string;
 }
 
 export interface DiagnosisData {

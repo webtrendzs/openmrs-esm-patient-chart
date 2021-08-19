@@ -1,5 +1,6 @@
 import React, { SyntheticEvent } from 'react';
 import dayjs from 'dayjs';
+import { mutate } from 'swr';
 import filter from 'lodash-es/filter';
 import includes from 'lodash-es/includes';
 import map from 'lodash-es/map';
@@ -15,9 +16,9 @@ import Form from 'carbon-components-react/es/components/Form';
 import FormGroup from 'carbon-components-react/es/components/FormGroup';
 import {
   createProgramEnrollment,
-  fetchEnrolledPrograms,
   fetchLocations,
   fetchAvailablePrograms,
+  useProgramEnrollments,
 } from './programs.resource';
 import { Program } from '../types';
 import styles from './programs-form.scss';
@@ -88,6 +89,7 @@ interface ProgramsFormProps {
 const ProgramsForm: React.FC<ProgramsFormProps> = ({ patientUuid, closeWorkspace, isTablet }) => {
   const { t } = useTranslation();
   const session = useSessionUser();
+  const { data: activeProgramEnrollments } = useProgramEnrollments(patientUuid);
   const [availableLocations, setAvailableLocations] = React.useState(null);
   const [completionDate, setCompletionDate] = React.useState(null);
   const [enrollmentDate, setEnrollmentDate] = React.useState(new Date());
@@ -131,22 +133,19 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ patientUuid, closeWorkspace
   const availablePrograms = viewState.availablePrograms;
   React.useEffect(() => {
     if (availablePrograms) {
-      const sub = fetchEnrolledPrograms(patientUuid).subscribe(
-        (enrolledPrograms) =>
-          dispatch({
-            availablePrograms: availablePrograms,
-            eligiblePrograms: filter(
-              availablePrograms,
-              (program) => !includes(map(enrolledPrograms, 'program.uuid'), program.uuid),
-            ),
-            program: null,
-            type: ActionTypes.selectProgram,
-          }),
-        () => createErrorHandler(),
-        () => sub.unsubscribe(),
-      );
+      if (activeProgramEnrollments) {
+        dispatch({
+          availablePrograms: availablePrograms,
+          eligiblePrograms: filter(
+            availablePrograms,
+            (program) => !includes(map(activeProgramEnrollments, 'program.uuid'), program.uuid),
+          ),
+          program: null,
+          type: ActionTypes.selectProgram,
+        });
+      }
     }
-  }, [patientUuid, availablePrograms]);
+  }, [availablePrograms, activeProgramEnrollments]);
 
   const handleSubmit = React.useCallback(
     (event: SyntheticEvent<HTMLFormElement>) => {
@@ -172,6 +171,8 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ patientUuid, closeWorkspace
       const sub = createProgramEnrollment(payload, abortController).subscribe(
         (response) => {
           if (response.status === 201) {
+            mutate(`/ws/rest/v1/programenrollment`);
+
             closeWorkspace();
 
             showToast({
@@ -222,7 +223,6 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ patientUuid, closeWorkspace
               ))}
           </Select>
           {(() => {
-            if (viewState.status !== ActionTypes.selectProgram) return null;
             if (!viewState.eligiblePrograms) return <InlineLoading className={styles.loading} />;
           })()}
         </div>

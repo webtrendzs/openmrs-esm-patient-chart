@@ -1,6 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import { capitalize } from 'lodash-es';
 import Button from 'carbon-components-react/es/components/Button';
 import DataTableSkeleton from 'carbon-components-react/es/components/DataTableSkeleton';
 import DataTable, {
@@ -16,27 +17,18 @@ import Add16 from '@carbon/icons-react/es/add/16';
 import styles from './conditions-detailed-summary.scss';
 import { attach } from '@openmrs/esm-framework';
 import { EmptyState, ErrorState } from '@openmrs/esm-patient-common-lib';
-import { Condition, performPatientConditionsSearch } from './conditions.resource';
+import { useConditions } from './conditions.resource';
 import { useConditionsContext } from './conditions.context';
-import { capitalize } from 'lodash-es';
+import { InlineLoading } from 'carbon-components-react';
 
 const ConditionsDetailedSummary: React.FC = () => {
   const { t } = useTranslation();
   const { patient } = useConditionsContext();
   const displayText = t('conditions', 'Conditions');
   const headerTitle = t('conditions', 'Conditions');
-  const [error, setError] = React.useState(null);
-  const [conditions, setConditions] = React.useState<Array<Condition>>(null);
+  const { data: conditions, isLoading, isError, isValidating } = useConditions(patient.identifier[0].value);
 
-  React.useEffect(() => {
-    if (patient) {
-      const sub = performPatientConditionsSearch(patient.identifier[0].value).subscribe(setConditions, setError);
-
-      return () => sub.unsubscribe();
-    }
-  }, [patient]);
-
-  const headers = React.useMemo(
+  const tableHeaders = React.useMemo(
     () => [
       {
         key: 'condition',
@@ -54,16 +46,14 @@ const ConditionsDetailedSummary: React.FC = () => {
     [t],
   );
 
-  const tableRows: Array<Condition> = React.useMemo(() => {
-    return conditions?.map((condition) => {
-      return {
-        ...condition,
-        id: condition.id,
-        condition: condition.display,
-        onsetDateTime: dayjs(condition.onsetDateTime).format('MMM-YYYY'),
-        status: capitalize(condition.clinicalStatus),
-      };
-    });
+  const tableRows = React.useMemo(() => {
+    return conditions?.map((condition) => ({
+      ...condition,
+      id: condition.id,
+      condition: condition.display,
+      onsetDateTime: dayjs(condition.onsetDateTime).format('MMM-YYYY'),
+      status: capitalize(condition.clinicalStatus),
+    }));
   }, [conditions]);
 
   const launchConditionsForm = React.useCallback(
@@ -71,9 +61,12 @@ const ConditionsDetailedSummary: React.FC = () => {
     [],
   );
 
-  const RenderConditionsSummary: React.FC = () => {
-    if (conditions.length) {
-      return (
+  if (isLoading) return <DataTableSkeleton role="progressbar" />;
+  if (isError) return <ErrorState error={isError} headerTitle={headerTitle} />;
+  if (conditions?.length) {
+    return (
+      <>
+        {isValidating ? <InlineLoading style={{ marginLeft: '1rem', width: '2rem', minHeight: '2.5rem' }} /> : null}
         <div>
           <div className={styles.conditionsHeader}>
             <h4 className={`${styles.productiveHeading03} ${styles.text02}`}>{headerTitle}</h4>
@@ -82,7 +75,7 @@ const ConditionsDetailedSummary: React.FC = () => {
             </Button>
           </div>
           <TableContainer>
-            <DataTable rows={tableRows} headers={headers} isSortable={true} size="short">
+            <DataTable rows={tableRows} headers={tableHeaders} isSortable={true} size="short">
               {({ rows, headers, getHeaderProps, getTableProps }) => (
                 <Table {...getTableProps()}>
                   <TableHead>
@@ -113,22 +106,10 @@ const ConditionsDetailedSummary: React.FC = () => {
             </DataTable>
           </TableContainer>
         </div>
-      );
-    }
-    return <EmptyState displayText={displayText} headerTitle={headerTitle} launchForm={launchConditionsForm} />;
-  };
-
-  return (
-    <>
-      {conditions ? (
-        <RenderConditionsSummary />
-      ) : error ? (
-        <ErrorState error={error} headerTitle={headerTitle} />
-      ) : (
-        <DataTableSkeleton role="progressbar" />
-      )}
-    </>
-  );
+      </>
+    );
+  }
+  return <EmptyState displayText={displayText} headerTitle={headerTitle} launchForm={launchConditionsForm} />;
 };
 
 export default ConditionsDetailedSummary;
