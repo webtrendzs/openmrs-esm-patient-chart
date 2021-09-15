@@ -13,18 +13,18 @@ function getImmunizationsConceptSetByUuid(
 }
 
 function isConceptMapping(searchText: string) {
-  return includes(searchText, ':');
+  return searchText.includes(':');
 }
 
 function searchImmunizationsConceptSetByMapping(
   immunizationsConceptSetSearchText: string,
   abortController: AbortController,
 ): Promise<OpenmrsConcept> {
-  const [source, code] = split(immunizationsConceptSetSearchText, ':');
+  const [source, code] = immunizationsConceptSetSearchText.split(':');
   return openmrsFetch(`/ws/rest/v1/concept?source=${source}&code=${code}&v=full`, {
     signal: abortController.signal,
-  }).then((response) => {
-    return response.data.results[0];
+  }).then(({ data }) => {
+    return data.results[0];
   });
 }
 

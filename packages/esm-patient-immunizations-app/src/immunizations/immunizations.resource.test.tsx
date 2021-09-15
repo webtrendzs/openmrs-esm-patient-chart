@@ -3,39 +3,49 @@ import { getImmunizationsConceptSet, performPatientImmunizationsSearch } from '.
 import { mockPatientImmunizationsSearchResponse } from '../../../../__mocks__/immunizations.mock';
 import { FHIRImmunizationBundle, OpenmrsConcept } from './immunization-domain';
 
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
+const mockOpenMRSFetch = openmrsFetch as jest.Mock;
 
-mockOpenmrsFetch.mockImplementation(jest.fn());
+jest.unmock('@openmrs/esm-framework');
 
 describe('<ImmunizationResource />', () => {
-  beforeEach(mockOpenmrsFetch.mockReset);
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
   it('should fetch immunization concept set by concept uuid', async () => {
-    mockOpenmrsFetch.mockResolvedValueOnce({
-      data: {
-        uuid: 'conceptSetUuid',
-        display: 'conceptSetName',
-        setMembers: [
-          { uuid: 'member1Uuid', display: 'member1Name' },
-          { uuid: 'member2Uuid', display: 'member2Name' },
-        ],
-      },
-    });
+    mockOpenMRSFetch.mockReturnValue(
+      Promise.resolve({
+        data: {
+          results: [
+            {
+              uuid: 'conceptSetUuid',
+              display: 'conceptSetName',
+              setMembers: [
+                { uuid: 'member1Uuid', display: 'member1Name' },
+                { uuid: 'member2Uuid', display: 'member2Name' },
+              ],
+            },
+          ],
+        },
+      }),
+    );
 
-    const abortController = new AbortController();
-    const immunizationsConceptSet: OpenmrsConcept = await getImmunizationsConceptSet('conceptSetUuid', abortController);
+    const ac = new AbortController();
+    const immunizationsConceptSet: OpenmrsConcept = await getImmunizationsConceptSet('conceptSetUuid:some-uuid', ac);
 
     expect(immunizationsConceptSet.uuid).toBe('conceptSetUuid');
     expect(immunizationsConceptSet.display).toBe('conceptSetName');
     expect(immunizationsConceptSet.setMembers.length).toBe(2);
 
-    expect(mockOpenmrsFetch).toHaveBeenCalledTimes(1);
-    const mockCalls = mockOpenmrsFetch.mock.calls[0];
-    expect(mockCalls[0]).toBe('/ws/rest/v1/concept/conceptSetUuid?v=full');
+    expect(mockOpenMRSFetch).toHaveBeenCalledTimes(1);
+    expect(mockOpenMRSFetch).toHaveBeenCalledWith(
+      '/ws/rest/v1/concept?source=conceptSetUuid&code=some-uuid&v=full',
+      expect.anything(),
+    );
   });
 
   it('should fetch immunization concept set by mapping', async () => {
-    mockOpenmrsFetch.mockResolvedValueOnce({
+    mockOpenMRSFetch.mockResolvedValueOnce({
       data: {
         results: [
           {
@@ -57,13 +67,13 @@ describe('<ImmunizationResource />', () => {
     expect(immunizationsConceptSet.display).toBe('conceptSetName');
     expect(immunizationsConceptSet.setMembers.length).toBe(2);
 
-    expect(mockOpenmrsFetch).toHaveBeenCalledTimes(1);
-    const mockCalls = mockOpenmrsFetch.mock.calls[0];
+    expect(mockOpenMRSFetch).toHaveBeenCalledTimes(1);
+    const mockCalls = mockOpenMRSFetch.mock.calls[0];
     expect(mockCalls[0]).toBe('/ws/rest/v1/concept?source=CIEL&code=12345&v=full');
   });
 
   it('should fetch immiunization bundles for a given patient', async () => {
-    mockOpenmrsFetch.mockResolvedValueOnce({
+    mockOpenMRSFetch.mockResolvedValueOnce({
       data: mockPatientImmunizationsSearchResponse,
     });
 
@@ -74,7 +84,7 @@ describe('<ImmunizationResource />', () => {
       abortController,
     );
 
-    expect(mockOpenmrsFetch).toHaveBeenCalledTimes(1);
+    expect(mockOpenMRSFetch).toHaveBeenCalledTimes(1);
     expect(fhirImmunizationBundle.resourceType).toBe('Bundle');
     expect(fhirImmunizationBundle.entry.length).toBe(6);
     expect(fhirImmunizationBundle.entry[0].resource.vaccineCode.coding[0].display).toBe('Rotavirus');
