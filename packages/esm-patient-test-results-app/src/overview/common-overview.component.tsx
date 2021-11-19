@@ -3,7 +3,7 @@ import Table16 from '@carbon/icons-react/es/table/16';
 import ChartLine16 from '@carbon/icons-react/es/chart--line/16';
 import { Button, TableToolbarContent, TableToolbar } from 'carbon-components-react';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
-import { Card, headers, formatDate, InfoButton, Separator } from './helpers';
+import { headers, formatDate, InfoButton, Separator } from './helpers';
 import { OverviewPanelEntry } from '../resources/useOverviewData';
 import { useTranslation } from 'react-i18next';
 import { navigate } from '@openmrs/esm-framework';
@@ -15,7 +15,6 @@ const DashboardResultsCount = 5;
 interface CommonOverviewPropsBase {
   overviewData: Array<OverviewPanelEntry>;
   insertSeparator?: boolean;
-  isPatientSummaryDashboard?: boolean;
   patientUuid?: string;
 }
 
@@ -25,7 +24,7 @@ interface CommonOverviewPropsWithToolbar {
 }
 
 interface CommonOverviewPropsWithoutToolbar {
-  deactivateToolbar: true;
+  hideToolbar: true;
 }
 
 type Only<T, U> = {
@@ -41,22 +40,20 @@ type CommonOverviewProps = CommonOverviewPropsBase &
 
 const CommonOverview: React.FC<CommonOverviewProps> = ({
   overviewData = [],
-  insertSeparator = false,
   openTimeline,
   openTrendline,
-  deactivateToolbar = false,
-  isPatientSummaryDashboard,
+  insertSeparator = false,
+  hideToolbar = false,
   patientUuid,
 }) => {
   const { t } = useTranslation();
-  const abnormalInterpretations = [
-    'LOW',
-    'HIGH',
-    'CRITICALLY_LOW',
-    'CRITICALLY_HIGH',
-    'OFF_SCALE_LOW',
-    'OFF_SCALE_HIGH',
-  ];
+  const [activeCardUuid, setActiveCardUuid] = React.useState('');
+
+  const isActiveCard = useCallback(
+    (uuid: string) =>
+      activeCardUuid === uuid || (!activeCardUuid && uuid === overviewData[0][overviewData[0].length - 1]),
+    [activeCardUuid, overviewData],
+  );
 
   const handleSeeAvailableResults = useCallback(() => {
     navigate({ to: `\${openmrsSpaBase}/patient/${patientUuid}/chart/test-results` });
@@ -68,46 +65,59 @@ const CommonOverview: React.FC<CommonOverviewProps> = ({
   return (
     <>
       {(() => {
-        const cards = overviewData.map(([title, type, data, date, uuid]) => {
-          const allNormalResults = !data.some((result) => abnormalInterpretations.includes(result.interpretation));
-          const patientSummaryDashboardData = data.slice(0, DashboardResultsCount);
-          return (
-            <Card allNormalResults={allNormalResults} key={uuid}>
-              <CommonDataTable
-                {...{
-                  title,
-                  data: isPatientSummaryDashboard ? patientSummaryDashboardData : data,
-                  tableHeaders: headers,
-                  description: (
-                    <div>
-                      {formatDate(date)}
-                      <InfoButton />
-                    </div>
-                  ),
-                  toolbar: deactivateToolbar || (
-                    <TableToolbar>
-                      <TableToolbarContent>
-                        {type === 'Test' && (
-                          <Button kind="ghost" renderIcon={ChartLine16} onClick={() => openTrendline(uuid, uuid)}>
-                            {t('trend', 'Trend')}
-                          </Button>
-                        )}
-                        <Button kind="ghost" renderIcon={Table16} onClick={() => openTimeline(uuid)}>
-                          {t('timeline', 'Timeline')}
+        const cards = overviewData.map(([title, type, data, date, uuid]) => (
+          <article
+            key={uuid}
+            className={`${insertSeparator ? '' : `${styles.card} ${isActiveCard(uuid) ? styles.activeCard : ''}`}`}
+          >
+            <CommonDataTable
+              {...{
+                title,
+                data,
+                description: (
+                  <div className={insertSeparator ? '' : styles.cardHeader}>
+                    {formatDate(date)}
+                    <InfoButton />
+                  </div>
+                ),
+                tableHeaders: headers,
+                toolbar: hideToolbar || (
+                  <TableToolbar>
+                    <TableToolbarContent>
+                      {type === 'Test' && (
+                        <Button
+                          kind="ghost"
+                          renderIcon={ChartLine16}
+                          onClick={() => {
+                            setActiveCardUuid(uuid);
+                            openTrendline(uuid, uuid);
+                          }}
+                        >
+                          {t('trend', 'Trend')}
                         </Button>
-                      </TableToolbarContent>
-                    </TableToolbar>
-                  ),
-                }}
-              />
-              {data.length > DashboardResultsCount && isPatientSummaryDashboard && (
-                <Button onClick={handleSeeAvailableResults} kind="ghost">
-                  {t('moreResultsAvailable', 'More results available')}
-                </Button>
-              )}
-            </Card>
-          );
-        });
+                      )}
+                      <Button
+                        kind="ghost"
+                        renderIcon={Table16}
+                        onClick={() => {
+                          setActiveCardUuid(uuid);
+                          openTimeline(uuid);
+                        }}
+                      >
+                        {t('timeline', 'Timeline')}
+                      </Button>
+                    </TableToolbarContent>
+                  </TableToolbar>
+                ),
+              }}
+            />
+            {data.length > DashboardResultsCount && insertSeparator && (
+              <Button onClick={handleSeeAvailableResults} kind="ghost">
+                {t('moreResultsAvailable', 'More results available')}
+              </Button>
+            )}
+          </article>
+        ));
 
         if (insertSeparator)
           return cards.reduce((acc, val, i, { length }) => {

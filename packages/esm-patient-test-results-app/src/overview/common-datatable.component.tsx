@@ -11,7 +11,7 @@ import {
 } from 'carbon-components-react';
 import { TypedTableRow } from './helpers';
 import { OverviewPanelData } from '../resources/useOverviewData';
-import styles from './common-overview.scss';
+import styles from './common-datatable.scss';
 
 interface CommonDataTableProps {
   data: Array<OverviewPanelData>;
@@ -25,9 +25,14 @@ interface CommonDataTableProps {
 }
 
 const CommonDataTable: React.FC<CommonDataTableProps> = ({ title, data, description, toolbar, tableHeaders }) => (
-  <DataTable rows={data} headers={tableHeaders}>
+  <DataTable rows={data} headers={tableHeaders} size="short">
     {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getTableContainerProps }) => (
-      <TableContainer title={title} description={description} {...getTableContainerProps()}>
+      <TableContainer
+        className={styles.tableContainer}
+        title={title}
+        description={description}
+        {...getTableContainerProps()}
+      >
         {toolbar}
         <Table {...getTableProps()} isSortable useZebraStyles>
           <colgroup className={styles.columns}>

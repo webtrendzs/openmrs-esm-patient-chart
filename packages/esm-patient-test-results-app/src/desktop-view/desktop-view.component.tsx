@@ -57,7 +57,7 @@ const DesktopView: React.FC<Record<string, any>> = ({ patientUuid, panelUuid, te
   return (
     <Grid>
       <OverflowBorder>
-        <div>
+        <div className={styles.overview}>
           <Overview patientUuid={patientUuid} openTimeline={openTimeline} openTrendline={openTrendline}></Overview>
         </div>
       </OverflowBorder>

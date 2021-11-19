@@ -11,9 +11,9 @@
   width: 100%;
   position: relative;
   overflow: auto;
+}
 
-  div {
-    display: grid;
-    gap: 1.5rem;
-  }
+.overview {
+  display: grid;
+  gap: 1.5rem;
 }
