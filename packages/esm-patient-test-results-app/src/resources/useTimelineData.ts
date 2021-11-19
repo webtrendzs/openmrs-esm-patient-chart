@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import usePatientResultsData from '../loadPatientTestData/usePatientResultsData';
+import usePatientResultsData from './usePatientResultsData';
 import { ObsRecord } from '@openmrs/esm-patient-common-lib';
 import dayjs from 'dayjs';
 

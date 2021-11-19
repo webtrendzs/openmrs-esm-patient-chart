@@ -1,6 +1,6 @@
 import React from 'react';
-import useOverviewData from './useOverviewData';
-import CommonOverview from './common-overview';
+import useOverviewData from '../resources/useOverviewData';
+import CommonOverview from './common-overview.component';
 import styles from './lab-results.scss';
 import { Button, DataTableSkeleton } from 'carbon-components-react';
 import { CardHeader, EmptyState } from '@openmrs/esm-patient-common-lib';

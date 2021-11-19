@@ -1,6 +1,6 @@
 import React from 'react';
-import useOverviewData from './useOverviewData';
-import CommonOverview from './common-overview';
+import useOverviewData from '../resources/useOverviewData';
+import CommonOverview from './common-overview.component';
 import { DataTableSkeleton } from 'carbon-components-react';
 import { Card } from './helpers';
 import { switchTo } from '@openmrs/esm-framework';

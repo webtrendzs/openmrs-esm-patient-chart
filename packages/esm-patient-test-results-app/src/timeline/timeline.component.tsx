@@ -1,6 +1,6 @@
 import * as React from 'react';
-import useScrollIndicator from './useScroll';
-import { useTimelineData } from './useTimelineData';
+import useScrollIndicator from '../resources/useScroll';
+import { useTimelineData } from '../resources/useTimelineData';
 import { Main, PaddingContainer, TimeSlots, Grid, RowStartCell, GridItems, ShadowBox } from './helpers';
 import { ObsRecord } from '@openmrs/esm-patient-common-lib';
 import styles from './timeline.scss';

@@ -1,14 +1,14 @@
 import * as React from 'react';
 import RangeSelector from './range-selector.component';
-import usePatientResultsData from '../loadPatientTestData/usePatientResultsData';
+import usePatientResultsData from '../resources/usePatientResultsData';
 import { Button } from 'carbon-components-react';
 import ArrowLeft24 from '@carbon/icons-react/es/arrow--left/24';
 import LineChart from '@carbon/charts-react/line-chart';
 import { ScaleTypes, LineChartOptions, TickRotations } from '@carbon/charts/interfaces';
 import { toOmrsDateFormat, toOmrsTimeString24 } from '@openmrs/esm-framework';
 import { ObsRecord, OBSERVATION_INTERPRETATION } from '@openmrs/esm-patient-common-lib';
-import { CommonDataTable } from '../overview/common-overview';
-import { exist } from '../loadPatientTestData/helpers';
+import CommonDataTable from '../overview/common-datatable.component';
+import { exist } from '../resources/helpers';
 import { useTranslation } from 'react-i18next';
 import styles from './trendline.scss';
 import '@carbon/charts/styles.css';

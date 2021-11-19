@@ -1,70 +1,16 @@
 import React, { useCallback } from 'react';
 import Table16 from '@carbon/icons-react/es/table/16';
 import ChartLine16 from '@carbon/icons-react/es/chart--line/16';
-import {
-  Button,
-  DataTable,
-  Table,
-  TableContainer,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableToolbarContent,
-  TableToolbar,
-} from 'carbon-components-react';
+import { Button, TableToolbarContent, TableToolbar } from 'carbon-components-react';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
-import { Card, headers, formatDate, InfoButton, Separator, TypedTableRow } from './helpers';
-import { OverviewPanelEntry, OverviewPanelData } from './useOverviewData';
+import { Card, headers, formatDate, InfoButton, Separator } from './helpers';
+import { OverviewPanelEntry } from '../resources/useOverviewData';
 import { useTranslation } from 'react-i18next';
 import { navigate } from '@openmrs/esm-framework';
+import CommonDataTable from './common-datatable.component';
+import styles from './common-overview.scss';
 
 const DashboardResultsCount = 5;
-
-export const CommonDataTable: React.FC<{
-  data: Array<OverviewPanelData>;
-  tableHeaders: Array<{
-    key: string;
-    header: string;
-  }>;
-  title?: string;
-  toolbar?: React.ReactNode;
-  description?: React.ReactNode;
-}> = ({ title, data, description, toolbar, tableHeaders }) => (
-  <DataTable rows={data} headers={tableHeaders}>
-    {({ rows, headers, getHeaderProps, getRowProps, getTableProps, getTableContainerProps }) => (
-      <TableContainer title={title} description={description} {...getTableContainerProps()}>
-        {toolbar}
-        <Table {...getTableProps()} isSortable useZebraStyles>
-          <colgroup>
-            <col span={1} style={{ width: '33%' }} />
-            <col span={1} style={{ width: '33%' }} />
-            <col span={1} style={{ width: '34%' }} />
-          </colgroup>
-          <TableHead>
-            <TableRow>
-              {headers.map((header) => (
-                <TableHeader key={header.key} {...getHeaderProps({ header })} isSortable>
-                  {header.header}
-                </TableHeader>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row, i) => (
-              <TypedTableRow key={row.id} interpretation={data[i]?.interpretation} {...getRowProps({ row })}>
-                {row.cells.map((cell) => (
-                  <TableCell key={cell.id}>{cell.value}</TableCell>
-                ))}
-              </TypedTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    )}
-  </DataTable>
-);
 
 interface CommonOverviewPropsBase {
   overviewData: Array<OverviewPanelEntry>;
@@ -103,13 +49,13 @@ const CommonOverview: React.FC<CommonOverviewProps> = ({
   patientUuid,
 }) => {
   const { t } = useTranslation();
-  const abnormalInterpretation = [
-    'HIGH',
-    'CRITICALLY_HIGH',
-    'OFF_SCALE_HIGH',
+  const abnormalInterpretations = [
     'LOW',
+    'HIGH',
     'CRITICALLY_LOW',
+    'CRITICALLY_HIGH',
     'OFF_SCALE_LOW',
+    'OFF_SCALE_HIGH',
   ];
 
   const handleSeeAvailableResults = useCallback(() => {
@@ -123,7 +69,7 @@ const CommonOverview: React.FC<CommonOverviewProps> = ({
     <>
       {(() => {
         const cards = overviewData.map(([title, type, data, date, uuid]) => {
-          const allNormalResults = !data.some((result) => abnormalInterpretation.includes(result.interpretation));
+          const allNormalResults = !data.some((result) => abnormalInterpretations.includes(result.interpretation));
           const patientSummaryDashboardData = data.slice(0, DashboardResultsCount);
           return (
             <Card allNormalResults={allNormalResults} key={uuid}>
