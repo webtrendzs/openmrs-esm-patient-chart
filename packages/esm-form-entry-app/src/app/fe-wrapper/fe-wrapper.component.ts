@@ -23,6 +23,7 @@ import { Encounter, FormSchema, LoggedInUser, Order } from '../types';
 // @ts-ignore
 import { showToast, detach, showNotification } from '@openmrs/esm-framework';
 import { PatientPreviousEncounterService } from '../openmrs-api/patient-previous-encounter.service';
+import { FileUploadResourceService } from '../services/file-upload-resource.service';
 
 @Component({
   selector: 'my-app-fe-wrapper',
@@ -78,6 +79,7 @@ export class FeWrapperComponent implements OnInit {
     private formSubmissionService: FormSubmissionService,
     private formErrorsService: FormErrorsService,
     private patientPreviousEncounter: PatientPreviousEncounterService,
+    private fileUploadResourceService: FileUploadResourceService,
   ) {}
 
   ngOnInit() {
@@ -369,6 +371,10 @@ export class FeWrapperComponent implements OnInit {
     this.dataSources.registerDataSource('patient', { visitTypeUuid: this.singleSpaProps.visitTypeUuid }, true);
     this.dataSources.registerDataSource('patient', this.formDataSourceService.getPatientObject(this.patient), true);
     this.dataSources.registerDataSource('rawPrevEnc', this.prevEncounter, false);
+    this.dataSources.registerDataSource('file', {
+      fileUpload: this.fileUploadResourceService.upload.bind(this.fileUploadResourceService),
+      fetchFile: this.fileUploadResourceService.getFile.bind(this.fileUploadResourceService),
+    });
   }
 
   private setDefaultValues() {

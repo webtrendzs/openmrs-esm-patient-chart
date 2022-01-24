@@ -28,7 +28,7 @@ const FormEntry: React.FC<FormProps> = ({ patientUuid, patient }) => {
           state={{
             formUuid: selectedForm.formUuid,
             visitUuid: selectedForm.visitUuid,
-            encounterUuid: null,
+            encounterUuid: 'e0ef3dc8-edb3-4a63-a69d-c8fd31d7657d',
             visitTypeUuid: currentVisit?.visitType?.uuid,
             view: 'form',
             patient: selectedForm.patient,
