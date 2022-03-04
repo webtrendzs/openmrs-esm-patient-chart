@@ -1,135 +1,46 @@
 [
   {
-    "name": "Aspirin",
-    "uuid": "18f43c99-2329-426e-97b5-c3356e6afe54",
-    "strength": "81mg",
+    "name": "Amlodipine",
+    "uuid": "12309904-5f80-4d65-b8e7-e04c183ecc0b",
+    "strength": "2.5mg",
     "dosageUnits": [
       {
-        "uuid": "1513AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "name": "Tablet",
-        "selected": true
-      },
-      {
-        "uuid": "1608AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "name": "Capsule"
-      }
-    ],
-    "route": [
-      {
-        "name": "Oral",
-        "conceptUuid": "160240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "selected": true
-      }
-    ],
-    "commonFrequencies": [
-      {
-        "name": "Once daily",
-        "conceptUuid": "160862AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "selected": true
-      },
-      {
-        "name": "Twice daily",
-        "conceptUuid": "160858AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      }
-    ],
-    "commonDosages": [
-      {
-        "dosage": "81 mg",
-        "numberOfPills": 1
-      },
-      {
-        "dosage": "162 mg",
-        "numberOfPills": 2
-      },
-      {
-        "dosage": "243 mg",
-        "numberOfPills": 3,
-        "selected": true
-      }
-    ]
-  },
-  {
-    "name": "Sulfadoxine",
-    "uuid": "fc92c351-8a85-41b9-95bf-a7dfea46c9cd",
-    "strength": "500mg",
-    "dosageUnits": [
-      {
-        "uuid": "1513AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "name": "Tablet",
-        "selected": true
-      },
-      {
-        "uuid": "1608AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "name": "Capsule"
-      }
-    ],
-    "route": [
-      {
-        "name": "Oral",
-        "conceptUuid": "160240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "selected": true
-      }
-    ],
-    "commonFrequencies": [
-      {
-        "name": "Once daily",
-        "conceptUuid": "160862AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "selected": true
-      },
-      {
-        "name": "Twice daily",
-        "conceptUuid": "160858AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      }
-    ],
-    "commonDosages": [
-      {
-        "dosage": "500 mg",
-        "numberOfPills": 1
-      },
-      {
-        "dosage": "1000 mg",
-        "numberOfPills": 2
-      },
-      {
-        "dosage": "1500 mg",
-        "numberOfPills": 3,
-        "selected": true
-      }
-    ]
-  },
-    {
-    "name": "Efavirenz",
-    "uuid": "9152d395-e821-47f0-b15c-588808585350",
-    "strength": "600mg",
-    "dosageUnits": [
-      {
-        "uuid": "1513AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        "name": "Tablet",
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
         "selected": true
       }
     ],
     "route": [
       {
         "name": "Oral",
-        "conceptUuid": "160240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
         "selected": true
       }
     ],
     "commonFrequencies": [
       {
-        "name": "Once daily",
-        "conceptUuid": "160862AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
         "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "31048cbb-21e0-4011-8f7f-e9346b396597"
       }
     ],
     "commonDosages": [
       {
-        "dosage": "600 mg",
+        "dosage": "2.5 mg",
         "numberOfPills": 1
       },
       {
-        "dosage": "300 mg",
-        "numberOfPills": 0.5
+        "dosage": "5 mg",
+        "numberOfPills": 2,
+        "selected": true
+      },
+      {
+        "dosage": "10 mg",
+        "numberOfPills": 4
       }
     ]
   }

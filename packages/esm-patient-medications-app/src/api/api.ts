@@ -3,7 +3,7 @@ import { openmrsFetch } from '@openmrs/esm-framework';
 import { OrderPost, PatientMedicationFetchResponse } from '../types/order';
 import { careSettingUuid } from '../constants';
 
-const durationUnitsConcept = '1732AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+const durationUnitsConcept = '52e8a934-d57c-4ef0-9fb7-7c15d816b723';
 
 /**
  * Fast, lighweight, reusable data fetcher with built-in cache invalidation that
@@ -26,7 +26,7 @@ export function usePatientOrders(patientUuid: string, status: 'ACTIVE' | 'any') 
   );
 
   const drugOrders = data?.data?.results
-    ? data.data.results.filter((order) => order.orderType.display === 'Drug Order')
+    ? data.data.results.filter((order) => order.orderType.display === 'Drug')
     : null;
 
   return {
@@ -53,7 +53,7 @@ export function getDrugByName(drugName: string, abortController?: AbortControlle
 }
 
 export function getDurationUnits(abortController: AbortController) {
-  return openmrsFetch(`/ws/rest/v1/concept/${durationUnitsConcept}?v=custom:(answers:(uuid,display))`, abortController);
+  return openmrsFetch(`/ws/rest/v1/concept/${durationUnitsConcept}?v=custom:(setMembers:(uuid,display))`, abortController);
 }
 
 export function getMedicationByUuid(abortController: AbortController, orderUuid: string) {

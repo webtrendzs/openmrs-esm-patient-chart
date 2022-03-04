@@ -1,18 +1,18 @@
 import dayjs from 'dayjs';
 import { OrderBasketItem } from '../types/order-basket-item';
 import { postOrder } from '../api/api';
-import { toOmrsIsoString } from '@openmrs/esm-framework';
-import { OrderPost } from '../types/order';
+import { toOmrsIsoString} from '@openmrs/esm-framework';
+import { OrderPost } from '../types/order';  
 
 const careSetting = '6f0c9a92-6f24-11e3-af88-005056821db0';
-const orderer = 'e89cae4a-3cb3-40a2-b964-8b20dda2c985';
 
 export async function orderDrugs(
+  orderer: string,
   orderBasketItems: Array<OrderBasketItem>,
   patientUuid: string,
   abortController: AbortController,
 ) {
-  const dtos = medicationOrderToApiDto(orderBasketItems, patientUuid);
+  const dtos = medicationOrderToApiDto(orderer, orderBasketItems, patientUuid);
   const erroredItems: Array<OrderBasketItem> = [];
 
   for (let i = 0; i < dtos.length; i++) {
@@ -29,7 +29,8 @@ export async function orderDrugs(
   return erroredItems;
 }
 
-function medicationOrderToApiDto(orderBasketItems: Array<OrderBasketItem>, patientUuid: string): Array<OrderPost> {
+function medicationOrderToApiDto(orderer:string, orderBasketItems: Array<OrderBasketItem>, patientUuid: string): Array<OrderPost> {
+
   return orderBasketItems.map((order) => {
     if (order.action === 'NEW' || order.action === 'RENEWED') {
       return {
@@ -48,7 +49,7 @@ function medicationOrderToApiDto(orderBasketItems: Array<OrderBasketItem>, patie
         asNeededCondition: order.asNeededCondition,
         numRefills: order.numRefills,
         quantity: order.pillsDispensed,
-        quantityUnits: '162396AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+        quantityUnits: '12dbf118-e2db-4b9a-b236-f3577d57587a',
         duration: order.duration,
         durationUnits: order.durationUnit.uuid,
         dosingType: order.isFreeTextDosage
@@ -77,7 +78,7 @@ function medicationOrderToApiDto(orderBasketItems: Array<OrderBasketItem>, patie
         asNeededCondition: order.asNeededCondition,
         numRefills: order.numRefills,
         quantity: order.pillsDispensed,
-        quantityUnits: '162396AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+        quantityUnits: '12dbf118-e2db-4b9a-b236-f3577d57587a',
         duration: order.duration,
         durationUnits: order.durationUnit.uuid,
         dosingType: order.isFreeTextDosage

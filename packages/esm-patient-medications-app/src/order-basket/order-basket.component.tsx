@@ -7,7 +7,7 @@ import { Button, ButtonSet, DataTableSkeleton, SearchSkeleton } from 'carbon-com
 import { useTranslation } from 'react-i18next';
 import { OrderBasketItem } from '../types/order-basket-item';
 import { getDurationUnits, getPatientEncounterId, usePatientOrders } from '../api/api';
-import { createErrorHandler, showToast, useLayoutType } from '@openmrs/esm-framework';
+import { createErrorHandler, showToast, useLayoutType, useSessionUser } from '@openmrs/esm-framework';
 import { OpenmrsResource } from '../types/openmrs-resource';
 import { orderDrugs } from './drug-ordering';
 import { connect } from 'unistore/react';
@@ -47,7 +47,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
   useEffect(() => {
     const abortController = new AbortController();
     const durationUnitsRequest = getDurationUnits(abortController).then(
-      (res) => setDurationUnits(res.data.answers),
+      (res) => {console.log(res.data.setMembers); setDurationUnits(res.data.setMembers)},
       createErrorHandler,
     );
     const patientEncounterRequest = getPatientEncounterId(patientUuid, abortController).then(
@@ -67,6 +67,15 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
     }
   };
 
+  const sessionUser = useSessionUser();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (sessionUser) {
+      setUser(sessionUser);
+    }
+  }, [sessionUser]);
+
   const openMedicationOrderForm = (item: OrderBasketItem, onSigned: (finalizedOrder: OrderBasketItem) => void) => {
     setMedicationOrderFormItem(item);
     setOnMedicationOrderFormSign((_) => (finalizedOrder) => {
@@ -79,7 +88,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
 
   const handleSaveClicked = () => {
     const abortController = new AbortController();
-    orderDrugs(items, patientUuid, abortController).then((erroredItems) => {
+    orderDrugs(user?.currentProvider?.uuid, items, patientUuid, abortController).then((erroredItems) => {
       setItems(erroredItems);
       if (erroredItems.length == 0) {
         closeWorkspace();

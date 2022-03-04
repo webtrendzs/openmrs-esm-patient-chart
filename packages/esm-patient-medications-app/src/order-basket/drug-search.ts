@@ -23,6 +23,7 @@ import { Drug } from '../types/order';
 
 export async function searchMedications(searchTerm: string, encounterUuid: string, abortController: AbortController) {
   const allSearchTerms = searchTerm.match(/\S+/g);
+  
   const drugs = await searchDrugsInBackend(allSearchTerms, abortController);
   const explodedSearchResults = drugs.flatMap((drug) => [
     ...explodeDrugResultWithCommonMedicationData(drug, encounterUuid),
@@ -42,8 +43,8 @@ async function searchDrugsInBackend(allSearchTerms: Array<string>, abortControll
 }
 
 function* explodeDrugResultWithCommonMedicationData(drug: Drug, encounterUuid: string): Generator<OrderBasketItem> {
+  
   const commonMedication = getCommonMedicationByUuid(drug.uuid);
-
   // If no common medication entry exists for the current drug, there is no point in displaying it in the search results,
   // because the user could not enter medication details anyway (the component requires a common medication entry
   // in order to work correctly).
