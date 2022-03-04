@@ -7,7 +7,7 @@ import { Button, ButtonSet, DataTableSkeleton, SearchSkeleton } from 'carbon-com
 import { useTranslation } from 'react-i18next';
 import { OrderBasketItem } from '../types/order-basket-item';
 import { getDurationUnits, getPatientEncounterId, usePatientOrders } from '../api/api';
-import { createErrorHandler, showToast, useConfig, useLayoutType } from '@openmrs/esm-framework';
+import { createErrorHandler, showToast, useConfig, useLayoutType, useSessionUser } from '@openmrs/esm-framework';
 import { OpenmrsResource } from '../types/openmrs-resource';
 import { orderDrugs } from './drug-ordering';
 import { connect } from 'unistore/react';
@@ -69,6 +69,15 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
     }
   };
 
+  const sessionUser = useSessionUser();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (sessionUser) {
+      setUser(sessionUser);
+    }
+  }, [sessionUser]);
+
   const openMedicationOrderForm = (item: OrderBasketItem, onSigned: (finalizedOrder: OrderBasketItem) => void) => {
     setMedicationOrderFormItem(item);
     setOnMedicationOrderFormSign((_) => (finalizedOrder) => {
@@ -81,7 +90,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
 
   const handleSaveClicked = () => {
     const abortController = new AbortController();
-    orderDrugs(items, patientUuid, abortController).then((erroredItems) => {
+    orderDrugs(user?.currentProvider?.uuid, items, patientUuid, abortController).then((erroredItems) => {
       setItems(erroredItems);
       if (erroredItems.length == 0) {
         closeWorkspace();

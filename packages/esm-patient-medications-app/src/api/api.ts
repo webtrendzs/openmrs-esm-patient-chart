@@ -23,7 +23,7 @@ export function usePatientOrders(patientUuid: string, status: 'ACTIVE' | 'any', 
   );
 
   const drugOrders = data?.data?.results
-    ? data.data.results.filter((order) => order.orderType.display === 'Drug Order')
+    ? data.data.results.filter((order) => order.orderType.display === 'Drug')
     : null;
 
   return {
@@ -49,8 +49,8 @@ export function getDrugByName(drugName: string, abortController?: AbortControlle
   );
 }
 
-export function getDurationUnits(abortController: AbortController, durationUnitsConcept) {
-  return openmrsFetch(`/ws/rest/v1/concept/${durationUnitsConcept}?v=custom:(answers:(uuid,display))`, abortController);
+export function getDurationUnits(abortController: AbortController, durationUnitsConcept: string) {
+  return openmrsFetch(`/ws/rest/v1/concept/${durationUnitsConcept}?v=custom:(setMembers:(uuid,display))`, abortController);
 }
 
 export function getMedicationByUuid(abortController: AbortController, orderUuid: string) {
