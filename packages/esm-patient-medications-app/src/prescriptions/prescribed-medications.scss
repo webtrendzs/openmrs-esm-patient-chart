@@ -1,0 +1,39 @@
+@import "~@openmrs/esm-styleguide/src/vars";
+@import "~carbon-components/src/globals/scss/vars";
+@import "~carbon-components/src/globals/scss/mixins";
+
+.label01 {
+    @include carbon--type-style("label-01");
+}
+
+.startDateColumn {
+    height: 100%;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+  
+    span {
+      margin: 0rem;
+    }
+}
+
+.tabletSearchResultTile {
+    margin-top: 5px;
+    border-left: 2px solid var(--brand-03);
+  
+    &:not(:last-of-type) {
+      margin-bottom: 1rem;
+    }
+}
+
+.searchResultTile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+  
+.searchResultTileContent {
+    flex: 1 1 auto;
+}

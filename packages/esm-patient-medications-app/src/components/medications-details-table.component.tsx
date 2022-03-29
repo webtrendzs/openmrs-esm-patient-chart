@@ -37,6 +37,7 @@ export interface ActiveMedicationsProps {
   showDiscontinueButton: boolean;
   showModifyButton: boolean;
   showReorderButton: boolean;
+  showOrderButton: boolean;
 }
 
 const MedicationsDetailsTable = connect<
@@ -55,6 +56,7 @@ const MedicationsDetailsTable = connect<
     showDiscontinueButton,
     showModifyButton,
     showReorderButton,
+    showOrderButton,
     showAddNewButton,
     items,
     setItems,
@@ -76,7 +78,6 @@ const MedicationsDetailsTable = connect<
         isVisible: true,
       },
     ];
-
     const tableRows = medications?.map((medication, id) => ({
       id: `${id}`,
       details: {
@@ -85,7 +86,7 @@ const MedicationsDetailsTable = connect<
           <div className={styles.medicationRecord}>
             <div>
               <p className={styles.bodyLong01}>
-                <strong>{capitalize(medication.drug?.name)}</strong> &mdash; {medication.drug?.strength.toLowerCase()}{' '}
+                <strong>{capitalize(medication.drug?.name)}</strong> &mdash; {medication.drug?.strength?.toLowerCase()}{' '}
                 &mdash; {medication.doseUnits?.display.toLowerCase()}
               </p>
               <p className={styles.bodyLong01}>
@@ -206,6 +207,7 @@ const MedicationsDetailsTable = connect<
                           showDiscontinueButton={showDiscontinueButton}
                           showModifyButton={showModifyButton}
                           showReorderButton={showReorderButton}
+                          showOrderButton={showOrderButton}
                           medication={medications[rowIndex]}
                           items={items}
                           setItems={setItems}
@@ -231,10 +233,11 @@ function InfoTooltip({ orderer }) {
   );
 }
 
-function OrderBasketItemActions({
+export function OrderBasketItemActions({
   showDiscontinueButton,
   showModifyButton,
   showReorderButton,
+  showOrderButton,
   medication,
   items,
   setItems,
@@ -242,6 +245,7 @@ function OrderBasketItemActions({
   showDiscontinueButton: boolean;
   showModifyButton: boolean;
   showReorderButton: boolean;
+  showOrderButton: boolean;
   medication: Order;
   items: Array<OrderBasketItem>;
   setItems: (items: Array<OrderBasketItem>) => void;
@@ -390,8 +394,63 @@ function OrderBasketItemActions({
     launchPatientWorkspace('order-basket-workspace');
   }, [items, setItems, medication]);
 
+  const handleOrderClick = useCallback(() => {
+    const _medication: any = medication;
+    console.log(_medication)
+    setItems([
+      ...items,
+      {
+        uuid: _medication.uuid,
+        startDate: new Date(),
+        action: 'NEW',
+        drug: _medication.drug,
+        dosage: {
+          dosage: _medication.dosage.dosage,
+          numberOfPills: _medication.dosage.numberOfPills,
+        },
+        dosageUnit: {
+          uuid: _medication.dosageUnit.uuid,
+          name: _medication.dosageUnit.name,
+        },
+        frequency: {
+          conceptUuid: _medication.frequency.conceptUuid,
+          name: _medication.frequency.name,
+        },
+        route: {
+          conceptUuid: _medication.route.conceptUuid,
+          name: _medication.route.name,
+        },
+        encounterUuid: _medication.encounterUuid,
+        commonMedicationName: _medication.commonMedicationName,
+        isFreeTextDosage: _medication.isFreeTextDosage,
+        freeTextDosage:_medication.freeTextDosage,
+        patientInstructions:_medication.patientInstructions,
+        asNeeded: _medication.asNeeded,
+        asNeededCondition: _medication.asNeededCondition,
+        duration: _medication.duration,
+        durationUnit: {
+          uuid: _medication.durationUnit.uuid,
+          display: _medication.durationUnit.display,
+        },
+        pillsDispensed: 0,
+        numRefills: 0,
+        indication: '',
+      },
+    ]);
+    launchPatientWorkspace('order-basket-workspace');
+  }, [items, setItems, medication]);
+
   return (
     <OverflowMenu selectorPrimaryFocus={'#modify'} flipped>
+      {showOrderButton && (
+        <OverflowMenuItem
+          className={styles.menuItem}
+          id="order"
+          itemText={t('order', 'Order')}
+          onClick={handleOrderClick}
+          disabled={alreadyInBasket}
+        />
+      )}
       {showModifyButton && (
         <OverflowMenuItem
           className={styles.menuItem}

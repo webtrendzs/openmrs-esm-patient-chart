@@ -1,3 +1,5 @@
+import { Obs } from '../prescriptions/prescribed-medications';
+import { PrescribedMed } from '../types/prescribed-medication';
 import commonMedications from './common-medication.json';
 
 export interface CommonMedication {
@@ -40,4 +42,13 @@ export function getCommonMedicationByUuid(uuid: string): CommonMedication | unde
 
 export function getCommonMedicationByName(name: string): CommonMedication | undefined {
   return commonMedications.filter((x) => x.name.toLowerCase() === name.toLowerCase())[0];
+}
+
+export function mapCommonMedsWithEncounter(prescribedMeds: Array<Obs>): Array<CommonMedication> | [] {
+  const commonMeds: Array<CommonMedication> = [];
+  prescribedMeds.forEach((med) => {
+    commonMeds.push(commonMedications.filter((x) => x.name.toLowerCase() === med.value.display.toLowerCase())[0]);
+  });
+
+  return commonMeds;
 }

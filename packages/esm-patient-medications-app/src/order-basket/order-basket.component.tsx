@@ -47,7 +47,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
   useEffect(() => {
     const abortController = new AbortController();
     const durationUnitsRequest = getDurationUnits(abortController).then(
-      (res) => {console.log(res.data.setMembers); setDurationUnits(res.data.setMembers)},
+      (res) => {setDurationUnits(res.data.setMembers)},
       createErrorHandler,
     );
     const patientEncounterRequest = getPatientEncounterId(patientUuid, abortController).then(
@@ -166,6 +166,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
                         medications={activePatientOrders}
                         showDiscontinueButton={true}
                         showModifyButton={true}
+                        showOrderButton={false}
                         showReorderButton={false}
                         showAddNewButton={false}
                       />

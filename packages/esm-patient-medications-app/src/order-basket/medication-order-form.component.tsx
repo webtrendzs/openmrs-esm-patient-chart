@@ -29,6 +29,7 @@ import { OpenmrsResource } from '../types/openmrs-resource';
 export interface MedicationOrderFormProps {
   initialOrderBasketItem: OrderBasketItem;
   durationUnits: Array<OpenmrsResource>;
+  formInAccordion?: boolean;
   onSign: (finalizedOrder: OrderBasketItem) => void;
   onCancel: () => void;
 }
@@ -36,6 +37,7 @@ export interface MedicationOrderFormProps {
 export default function MedicationOrderForm({
   initialOrderBasketItem,
   durationUnits,
+  formInAccordion,
   onSign,
   onCancel,
 }: MedicationOrderFormProps) {
@@ -47,7 +49,7 @@ export default function MedicationOrderForm({
 
   return (
     <>
-      <div className={styles.medicationDetailsHeader}>
+      {!formInAccordion && (<div className={styles.medicationDetailsHeader}>
         {orderBasketItem.isFreeTextDosage ? (
           <strong>{capitalize(orderBasketItem.commonMedicationName)}</strong>
         ) : (
@@ -64,11 +66,11 @@ export default function MedicationOrderForm({
             </span>
           </>
         )}
-      </div>
-      <Form className={styles.orderForm} onSubmit={() => onSign(orderBasketItem)}>
+      </div>)}
+      <Form className={formInAccordion? styles.orderFormAccordion : styles.orderForm} onSubmit={(e) => {e.preventDefault(); onSign(orderBasketItem)}}>
         <Grid className={styles.grid}>
           {isDesktop ? (
-            <div className={styles.backButton}>
+            !formInAccordion && (<div className={styles.backButton}>
               <Button
                 kind="ghost"
                 renderIcon={ArrowLeft24}
@@ -78,7 +80,7 @@ export default function MedicationOrderForm({
               >
                 <span>{t('backToOrderBasket', 'Back to order basket')}</span>
               </Button>
-            </div>
+            </div>)
           ) : null}
           <h2 className={styles.heading}>{t('orderForm', 'Order Form')}</h2>
           <Row className={styles.row}>

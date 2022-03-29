@@ -41,6 +41,7 @@ export default function MedicationsSummary({ patientUuid }: MedicationsSummaryPr
                 title={t('activeMedicationsTableTitle', 'Active Medications')}
                 medications={activeOrders}
                 showDiscontinueButton={true}
+                showOrderButton={false}
                 showModifyButton={true}
                 showReorderButton={false}
                 showAddNewButton={false}
@@ -64,6 +65,7 @@ export default function MedicationsSummary({ patientUuid }: MedicationsSummaryPr
                 title={t('pastMedicationsTableTitle', 'Past Medications')}
                 medications={pastOrders}
                 showDiscontinueButton={true}
+                showOrderButton={false}
                 showModifyButton={true}
                 showReorderButton={true}
                 showAddNewButton={false}

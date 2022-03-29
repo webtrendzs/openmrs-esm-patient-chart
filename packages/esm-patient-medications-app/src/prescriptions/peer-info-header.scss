@@ -1,0 +1,24 @@
+@import "~@openmrs/esm-styleguide/src/vars";
+@import "~carbon-components/src/globals/scss/vars";
+@import "~carbon-components/src/globals/scss/mixins";
+
+.vitals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: $spacing-09;
+    padding: $spacing-05;
+    outline: none;
+    pointer-events: visibleFill;
+  }
+  
+  .container {
+    display: flex;
+    align-items: baseline;
+  }
+
+  .heading {
+    @include carbon--type-style("productive-heading-02");
+    margin-right: $spacing-03;
+    color: $text-02;
+  }

@@ -98,12 +98,20 @@
   .orderForm {
     height: calc(100vh - 9rem);
   }
+
+  .orderFormAccordion {
+    height: calc(100vh - 18rem);
+  }
 }
 
 /* Tablet */
 :global(.omrs-breakpoint-lt-desktop) {
   .orderForm {
     height: calc(100vh - 6rem);
+  }
+
+  .orderFormAccordion {
+    height: calc(100vh - 22rem);
   }
 }
 
@@ -118,4 +126,8 @@
 
 .spacer {
   margin-top: 3rem;
+}
+
+:global(.bx--accordion__content) {
+  padding-right: 1rem;
 }
