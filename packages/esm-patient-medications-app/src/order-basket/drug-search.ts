@@ -69,6 +69,7 @@ function* explodeDrugResultWithCommonMedicationData(
         for (const route of commonMedication.route) {
           yield {
             action: 'NEW',
+            uuid: drug.uuid,
             drug,
             dosage,
             dosageUnit,

@@ -49,7 +49,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
     const durationUnitsConcept = config.durationUnitsConcept;
     const abortController = new AbortController();
     const durationUnitsRequest = getDurationUnits(abortController, durationUnitsConcept).then(
-      (res) => setDurationUnits(res.data.answers),
+      (res) => {setDurationUnits(res.data.setMembers)},
       createErrorHandler,
     );
     const patientEncounterRequest = getPatientEncounterId(patientUuid, abortController).then(
@@ -168,6 +168,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
                         medications={activePatientOrders}
                         showDiscontinueButton={true}
                         showModifyButton={true}
+                        showOrderButton={false}
                         showReorderButton={false}
                         showAddNewButton={false}
                       />

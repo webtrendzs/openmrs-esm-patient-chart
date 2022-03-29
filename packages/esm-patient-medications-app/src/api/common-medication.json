@@ -1,6 +1,6 @@
 [
   {
-    "name": "Amlodipine",
+    "name": "AMLODIPINE",
     "uuid": "12309904-5f80-4d65-b8e7-e04c183ecc0b",
     "strength": "2.5mg",
     "dosageUnits": [
@@ -30,16 +30,61 @@
     ],
     "commonDosages": [
       {
-        "dosage": "2.5 mg",
+        "dosage": "2.5mg",
         "numberOfPills": 1
       },
       {
-        "dosage": "5 mg",
+        "dosage": "5mg",
         "numberOfPills": 2,
         "selected": true
       },
       {
-        "dosage": "10 mg",
+        "dosage": "10mg",
+        "numberOfPills": 4
+      }
+    ]
+  },
+  {
+    "name": "FELODIPINE",
+    "uuid": "5856e0a6-3b75-4531-a1ef-9209919fb6f5",
+    "strength": "5mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "31048cbb-21e0-4011-8f7f-e9346b396597"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "2.5mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "5mg",
+        "numberOfPills": 2,
+        "selected": true
+      },
+      {
+        "dosage": "10mg",
         "numberOfPills": 4
       }
     ]

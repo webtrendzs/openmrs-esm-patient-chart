@@ -30,6 +30,15 @@ function setupOpenMRS() {
         },
       },
       {
+        name: 'prescribed-medications-widget',
+        slot: 'patient-chart-summary-dashboard-slot',
+        order: 0,
+        load: getAsyncLifecycle(() => import('./prescriptions/active-prescriptions.component'), options),
+        meta: {
+          columnSpan: 4,
+        }
+      },
+      {
         name: 'active-medications-widget',
         slot: 'patient-chart-summary-dashboard-slot',
         order: 1,
@@ -52,6 +61,17 @@ function setupOpenMRS() {
         },
       },
       {
+        name: 'prescription-order-basket-workspace',
+        load: getAsyncLifecycle(() => import('./prescriptions/prescription-order-basket'), options),
+        meta: {
+          title: {
+            key: 'prescriptionOrderBasket',
+            default: 'Prescriptions',
+          },
+          type: 'order',
+        },
+      },
+      {
         name: 'medications-summary-dashboard',
         slot: 'patient-chart-dashboard-slot',
         order: 3,
@@ -62,8 +82,14 @@ function setupOpenMRS() {
         name: 'order-basket-action-menu',
         slot: 'action-menu-items-slot',
         load: getAsyncLifecycle(() => import('./medications-summary/order-basket-action-button.component'), options),
-        order: 0,
+        order: 0
       },
+      {
+        name: 'patient-peer-info',
+        slot: 'patient-info-slot',
+        order: 2,
+        load: getAsyncLifecycle(() => import('./prescriptions/peer-info-header.component'), options)
+      }
     ],
   };
 }

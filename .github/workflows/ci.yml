@@ -552,11 +552,11 @@ jobs:
       - name: Update Importmap
         uses: fjogeleit/http-request-action@master
         with:
-          url: http://${{ secrets.DEPLOYER_HOST }}/services?env=prod
+          url: https://${{ secrets.DEPLOYER_HOST }}/services?env=prod
           method: "PATCH"
           username: ${{ secrets.DEPLOYER_USERNAME }}
           password: ${{ secrets.DEPLOYER_PASSWORD }}
-          data: '{ "service":"${{ env.ESM_NAME }}","url":"https://spa-modules.nyc3.digitaloceanspaces.com/${{ env.ESM_NAME }}/${{ env.TIMESTAMP }}_${{ github.sha }}/${{ env.JS_NAME }}" }'
+          data: '{ "service":"${{ env.ESM_NAME }}","url":"https://poc-test-builds.fra1.digitaloceanspaces.com/${{ env.ESM_NAME }}/${{ env.TIMESTAMP }}_${{ github.sha }}/${{ env.JS_NAME }}" }'
           customHeaders: '{ "Accept": "application/json", "Content-Type": "application/json" }'
 
   deploy_patient_notes_app:
