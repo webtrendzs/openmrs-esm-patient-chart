@@ -89,16 +89,9 @@ const PrescribedMedicationsTable = connect<
     }, [patientUuid, encounter]);
 
     const addToOrderBasket = React.useCallback(() => {
-      setItems(orderItems);
+      setItems(orderItems.map((item) => {item.indication = 'HTN'; return item; }));
       launchPatientWorkspace('prescription-order-basket-workspace');
     }, [orderItems]);
-
-
-    const alreadyInBasket = false//items.some((x) => x.uuid === medication.uuid);
-
-    const handleOrderClick = (orderItem, openForm) => {
-      launchPatientWorkspace('prescription-order-basket-workspace');
-    };
 
     const tableHeaders = [
       {
@@ -148,7 +141,7 @@ const PrescribedMedicationsTable = connect<
           <div className={''}>
             <CardHeader title={displayText}>
               <Button kind="ghost" renderIcon={Add16} iconDescription="add all to order basket" onClick={addToOrderBasket}>
-                {t('orderAll', 'Order All')}
+                {t('orderAll', 'Add All')}
               </Button>
             </CardHeader>
             <DataTable
@@ -269,7 +262,7 @@ export function PrescriptionOrderActions({
         },
         pillsDispensed: 0,
         numRefills: 0,
-        indication: '',
+        indication: 'HTN',
       },
     ]);
     launchPatientWorkspace('prescription-order-basket-workspace');

@@ -28,9 +28,15 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
   
   const [durationUnits, setDurationUnits] = useState<Array<OpenmrsResource>>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSignClose, setShowSignClose] = useState(false);
   const [medicationsForOrder, setMedicationsForOrder] = useState<Array<OrderBasketItem>>([]);
+  const [toggledItem, setToggledItem] = useState<Array<boolean>>([]);
 
   useMemo(() => {
+    const accordionItems = Array.from({length: items.length}, i => i = false);
+    // open the first accordion
+    accordionItems[0] = true;
+    setToggledItem(accordionItems);
     const abortController = new AbortController();
     const durationUnitsRequest = getDurationUnits(abortController).then(
       (res) => {setDurationUnits(res.data.setMembers)},
@@ -56,14 +62,44 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
     closeWorkspace();
   };
 
-  const handleSaveClicked = (order) => {
-    console.log(medicationsForOrder);
-    setMedicationsForOrder((existingOrders) => {
-      return [...existingOrders, order];
+  const toggleAccordions = (accordions) => {
+    const _items = [...accordions];
+    let openIndex = 0;
+    accordions.forEach((item, index) => {
+      // close the current
+      if(item==true) { 
+        _items[index] = false; 
+        openIndex =index + 1;
+        // open the next
+        if(openIndex < items.length) _items[openIndex] = true;
+      }
     });
-  };
+    const allClosed = _items.filter(i => i==false)
+    if(allClosed.length == _items.length)  setShowSignClose(true);
+    return _items;
+  }
+  
+  const handleSaveClicked = (order) => {
+    
+    if(order.pillsDispensed == 0 || order.duration=='') {
+      showToast({
+        critical: true,
+        kind: 'error',
+        title: t('orderInvalid', 'Invalid Form'),
+        description: t(
+          'orderErrorText',
+          'You must fill out the Quantity and Duration of this request before you proceed',
+        ),
+      });
 
-  const closeItem = () => false;
+    } else {
+      setToggledItem(toggleAccordions(toggledItem));
+      setMedicationsForOrder((existingOrders) => {
+        return [...existingOrders, order];
+      });
+    }
+    
+  };
 
 
   const handleOrderSubmitted = () => {
@@ -88,18 +124,10 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
   };
   return (
       <>
-        <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
-                <Button className={styles.button} kind="secondary" onClick={handleCancelClicked}>
-                  {t('cancel', 'Cancel')}
-                </Button>
-                <Button className={styles.button} kind="primary" onClick={handleOrderSubmitted}>
-                  {t('signAndClose', 'Sign and close')}
-                </Button>
-        </ButtonSet>
         <Accordion>
         {
           items.map((item, index) => (
-            <AccordionItem open={closeItem()} title={
+            <AccordionItem open={toggledItem[index]} title={
               <>
               <span>
                 <strong className={styles.dosageInfo}>
@@ -126,6 +154,15 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
         }
         
         </Accordion>
+        {showSignClose ? (<ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
+                <Button className={styles.button} kind="secondary" onClick={handleCancelClicked}>
+                  {t('cancel', 'Cancel')}
+                </Button>
+                <Button className={styles.button} kind="primary" onClick={handleOrderSubmitted}>
+                  {t('signAndClose', 'Sign and close')}
+                </Button>
+        </ButtonSet>) : (null) 
+        }
       </>
 
     );
