@@ -88,5 +88,42 @@
         "numberOfPills": 4
       }
     ]
+  },
+  {
+    "name": "HYDROCHLOROTHIAZIDE",
+    "uuid": "19c6df2b-486c-48df-805a-7333898ea093",
+    "strength": "50mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "31048cbb-21e0-4011-8f7f-e9346b396597"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "25mg",
+        "numberOfPills": 1,
+        "selected": true
+      }
+    ]
   }
 ]
