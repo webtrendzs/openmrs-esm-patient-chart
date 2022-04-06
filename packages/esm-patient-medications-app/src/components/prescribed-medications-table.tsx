@@ -62,7 +62,7 @@ const PrescribedMedicationsTable = connect<
         const encounterData = extractEncounterMedData(encounter.obs);
         const commonMeds = mapCommonMedsWithEncounter(encounterData['CURRENT HYPERTENSION DRUGS USED FOR TREATMENT']);
         mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
-
+          console.log("data", data);
           const medObs = encounterData['HYPERTENSION TREATMENT STARTED, DETAILED'];
 
           const orders = data.map((order: Array<any>) => {

@@ -41,7 +41,8 @@ const PeerInfoHeader: React.FC<PeerInfoHeaderProps> = ({ patientUuid }) => {
     } 
 
   }, [patientUuid, encounter]);
-
+  if(!nhifStatus) 
+    return(<></>)
   return (
     <div className={styles['vitals-header']}>
       <span className={styles.container}>
