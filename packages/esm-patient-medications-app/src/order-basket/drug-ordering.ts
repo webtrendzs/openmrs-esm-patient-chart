@@ -49,7 +49,7 @@ function medicationOrderToApiDto(orderer:string, orderBasketItems: Array<OrderBa
         asNeededCondition: order.asNeededCondition,
         numRefills: order.numRefills,
         quantity: order.pillsDispensed,
-        quantityUnits: '12dbf118-e2db-4b9a-b236-f3577d57587a',
+        quantityUnits: 'a8a0630a-1350-11df-a1f1-0026b9348838',
         duration: order.duration,
         durationUnits: order.durationUnit.uuid,
         dosingType: order.isFreeTextDosage
@@ -78,7 +78,7 @@ function medicationOrderToApiDto(orderer:string, orderBasketItems: Array<OrderBa
         asNeededCondition: order.asNeededCondition,
         numRefills: order.numRefills,
         quantity: order.pillsDispensed,
-        quantityUnits: '12dbf118-e2db-4b9a-b236-f3577d57587a',
+        quantityUnits: 'a8a0630a-1350-11df-a1f1-0026b9348838',
         duration: order.duration,
         durationUnits: order.durationUnit.uuid,
         dosingType: order.isFreeTextDosage

@@ -44,10 +44,10 @@ export function getCommonMedicationByName(name: string): CommonMedication | unde
   return commonMedications.filter((x) => x.name.toLowerCase() === name.toLowerCase())[0];
 }
 
-export function mapCommonMedsWithEncounter(prescribedMeds: Array<Obs>): Array<CommonMedication> | [] {
+export function mapCommonMedsWithEncounter(prescribedMeds: Array<string>): Array<CommonMedication> | [] {
   const commonMeds: Array<CommonMedication> = [];
   prescribedMeds.forEach((med) => {
-    commonMeds.push(commonMedications.filter((x) => x.name.toLowerCase() === med.value.display.toLowerCase())[0]);
+    commonMeds.push(commonMedications.filter((x) => x.name.toLowerCase() === med.toLowerCase())[0]);
   });
 
   return commonMeds;
