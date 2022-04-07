@@ -60,16 +60,13 @@ const PrescribedMedicationsTable = connect<
 
       if (encounter) {
         const encounterData = extractEncounterMedData(encounter.obs);
-        const commonMeds = mapCommonMedsWithEncounter(encounterData['CURRENT HYPERTENSION DRUGS USED FOR TREATMENT']);
+        const commonMeds = mapCommonMedsWithEncounter(pickDrugNamesFromObs(encounterData['HYPERTENSION TREATMENT STARTED, DETAILED']));
         mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
-          console.log("data", data);
           const medObs = encounterData['HYPERTENSION TREATMENT STARTED, DETAILED'];
-
           const orders = data.map((order: Array<any>) => {
             return order.filter((o) => getPrescriptionInfo(o, medObs))[0];
           });
           setOrderItems(orders);
-
           setIsLoading(false);
         });
         return () => abortController.abort();
@@ -200,13 +197,22 @@ function mimicSearchMedications(prescriptions: Array<any>, encounterUuid: string
   return Promise.all(orders);
 }
 
+function pickDrugNamesFromObs(obs: Array<any>) : Array<string> {
+  const mapppedObs: Array<string> = obs.map((ob) => {
+    const drugName: any = ob.display.match(/(?<=\().+?(?=\))/g).pop();
+    return drugName;
+  });
+ 
+  return mapppedObs;
+}
+
 function getPrescriptionInfo(order: OrderBasketItem, prescribedMedsObs: Array<Obs>): boolean {
 
   const mapppedObs: Array<string> = prescribedMedsObs.map((ob) => {
-    const drugName: any = ob.display.match(/\((.*)\)/)[1];
+    const drugName: any = ob.display.match(/(?<=\().+?(?=\))/g).pop();
     const drugDosage = ob.display.match(/([+-]?([0-9]*[.])?[0-9]+)(mg)/i);
     const frequency = ob.groupMembers.filter(member => member.concept.display === 'MEDICATION FREQUENCY')[0];
-
+    
     return (drugName + '/' + drugDosage[0] + '/' + frequency.value.display).toLowerCase();
 
   });
