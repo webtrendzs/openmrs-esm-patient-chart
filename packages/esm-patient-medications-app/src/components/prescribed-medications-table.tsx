@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import uniqBy from 'lodash-es/uniqBy';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -29,6 +30,7 @@ import { getPatientHTNEncounter } from '../api/api';
 import { OrderBasketItem } from '../types/order-basket-item';
 
 import { searchMedications } from '../order-basket/drug-search';
+import { capitalize } from 'lodash';
 
 interface PrescribedMedicationsTableProps {
   patientUuid: string;
@@ -64,9 +66,13 @@ const PrescribedMedicationsTable = connect<
         mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
           const medObs = encounterData['HYPERTENSION TREATMENT STARTED, DETAILED'];
           const orders = data.map((order: Array<any>) => {
-            return order.filter((o) => getPrescriptionInfo(o, medObs))[0];
+            return order.filter((o) => byPrescriptionInfo(o, medObs)).shift();
           });
-          setOrderItems(orders);
+          
+          setOrderItems(orders.map((o) => {
+            o.prescriptionDate = new Date(encounter.encounterDatetime);
+            return o;
+          }));
           setIsLoading(false);
         });
         return () => abortController.abort();
@@ -108,7 +114,7 @@ const PrescribedMedicationsTable = connect<
       precsriptionDate: {
         content: (
           <div className={styles.startDateColumn}>
-            <span>{formatDate(new Date(medication.startDate))}</span>
+            <span>{formatDate(new Date(medication.prescriptionDate))}</span>
           </div>
         ),
       },
@@ -116,13 +122,17 @@ const PrescribedMedicationsTable = connect<
         content:
           <div className={styles.searchResultTile}>
             <div className={styles.searchResultTileContent}>
-              <p>
-                <strong>{medication.drug.concept.display.toLowerCase()}</strong> &mdash; {medication.dosage?.dosage.toLowerCase()} &mdash;{' '}
-                {medication.dosageUnit.name}
-                <br />
-                <span className={styles.label01}>{medication.frequency.name}</span> &mdash;{' '}
-                <span className={styles.label01}>{medication.route.name}</span>
-              </p>
+
+            <p>
+              <strong className={""}>
+                {capitalize(medication.drug.concept.display)} ({medication.dosage?.dosage})
+              </strong>{' '}
+              <span className={styles.bodyShort01}>
+                &mdash; {medication.route.name} &mdash; {medication.dosageUnit.name} &mdash;{' '}
+              </span>
+              <span className={styles.caption01}>{t('dose', 'Dose').toUpperCase()}</span>{' '}
+              <strong className={styles.dosageInfo}>{medication.frequency.name}</strong>
+            </p>
             </div>
           </div>
       }
@@ -193,31 +203,46 @@ function mimicSearchMedications(prescriptions: Array<any>, encounterUuid: string
   prescriptions.forEach((med) => {
     orders.push(searchMedications(med.name, encounterUuid, ab));
   });
-
+  
   return Promise.all(orders);
 }
 
 function pickDrugNamesFromObs(obs: Array<any>) : Array<string> {
+  const compounds = [];
   const mapppedObs: Array<string> = obs.map((ob) => {
     const drugName: any = ob.display.match(/(?<=\().+?(?=\))/g).pop();
-    return drugName;
+    // compound drug names should be split
+    if(drugName.match(/\s+AND\s+/)) {
+      compounds.push(drugName.split(" AND ").pop());
+      return drugName.split(" AND ").shift();
+    }
+    return drugName.trim();
   });
  
-  return mapppedObs;
+  return mapppedObs.concat(compounds);
 }
 
-function getPrescriptionInfo(order: OrderBasketItem, prescribedMedsObs: Array<Obs>): boolean {
+function byPrescriptionInfo(order: OrderBasketItem, prescribedMedsObs: Array<Obs>): boolean {
+  const compoundedDrug = [];
 
   const mapppedObs: Array<string> = prescribedMedsObs.map((ob) => {
-    const drugName: any = ob.display.match(/(?<=\().+?(?=\))/g).pop();
-    const drugDosage = ob.display.match(/([+-]?([0-9]*[.])?[0-9]+)(mg)/i);
+    
+    let drugName: any = ob.display.match(/(?<=\().+?(?=\))/g).pop();
+    let drugDosage = ob.display.match(/(([0-9]*[.])?[0-9]+mg)/g);
     const frequency = ob.groupMembers.filter(member => member.concept.display === 'MEDICATION FREQUENCY')[0];
     
-    return (drugName + '/' + drugDosage[0] + '/' + frequency.value.display).toLowerCase();
+    // if it is a compound drug
+    if(drugName.match(/\s+AND\s+/)) {
+      const drugNameSplit = drugName.split(" AND ");
+      compoundedDrug.push((drugNameSplit.pop().trim() + '/' + drugDosage.pop()+ '/' + frequency.value.display).toLowerCase())
+      drugName = drugNameSplit.shift();
+    }
+    
+    return (drugName.trim() + '/' + drugDosage.shift() + '/' + frequency.value.display).toLowerCase();
 
   });
-
-  return mapppedObs.includes((order.commonMedicationName + '/' + order.dosage.dosage + '/' + order.frequency.name).toLowerCase());
+  
+  return mapppedObs.concat(compoundedDrug).includes((order.commonMedicationName + '/' + order.dosage.dosage + '/' + order.frequency.name).toLowerCase());
 }
 
 export function PrescriptionOrderActions({
@@ -238,6 +263,7 @@ export function PrescriptionOrderActions({
         startDate: new Date(),
         action: 'NEW',
         drug: medication.drug,
+        prescriptionDate: medication.prescriptionDate,
         dosage: {
           dosage: medication.dosage.dosage,
           numberOfPills: medication.dosage.numberOfPills,

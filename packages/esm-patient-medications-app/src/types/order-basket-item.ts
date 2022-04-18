@@ -21,6 +21,7 @@ export interface OrderBasketItem {
   asNeeded: boolean;
   asNeededCondition: string;
   startDate: Date;
+  prescriptionDate?: Date;
   durationUnit: OpenmrsResource;
   duration: number | null;
   pillsDispensed: number;
