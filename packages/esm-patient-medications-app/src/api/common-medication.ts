@@ -45,6 +45,7 @@ export function getCommonMedicationByName(name: string): CommonMedication | unde
 }
 
 export function mapCommonMedsWithEncounter(prescribedMeds: Array<string>): Array<CommonMedication> | [] {
+  
   const commonMeds: Array<CommonMedication> = [];
   prescribedMeds.forEach((med) => {
     commonMeds.push(commonMedications.filter((x) => x.name.toLowerCase() === med.toLowerCase())[0]);
