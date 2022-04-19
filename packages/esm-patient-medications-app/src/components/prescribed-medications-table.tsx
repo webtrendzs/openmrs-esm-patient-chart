@@ -59,7 +59,6 @@ const PrescribedMedicationsTable = connect<
 
     useEffect(() => {
       const abortController = new AbortController();
-
       if (encounter) {
         const encounterData = extractEncounterMedData(encounter.obs);
         const commonMeds = mapCommonMedsWithEncounter(pickDrugNamesFromObs(encounterData['HYPERTENSION TREATMENT STARTED, DETAILED']));
@@ -85,7 +84,7 @@ const PrescribedMedicationsTable = connect<
           createErrorHandler,
         );
 
-        Promise.all([patientEncounterRequest]).finally(() => setIsLoading(true));
+        Promise.all([patientEncounterRequest]).finally(() => setIsLoading(false));
         return () => abortController.abort();
       }
 

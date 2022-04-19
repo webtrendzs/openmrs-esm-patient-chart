@@ -53,7 +53,7 @@ const PeerInfoHeader: React.FC<PeerInfoHeaderProps> = ({ patientUuid }) => {
               <InlineLoading />
             </span>
           ) : (
-            <span>NHIF Status: <strong>{nhifStatus.value.display}</strong> / RTC Date: <strong>{formatDate(new Date(rtcDate.value))}</strong></span>
+            <span>NHIF Status: <strong>{nhifStatus.value.display}</strong> / Next RTC Date: <strong>{formatDate(new Date(rtcDate.value))}</strong></span>
           )
         }
         
