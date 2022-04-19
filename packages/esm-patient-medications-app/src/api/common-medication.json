@@ -147,6 +147,55 @@
     ]
   },
   {
+    "name": "HYDROCHLOROTHIAZIDE",
+    "uuid": "19c6df2b-486c-48df-805a-7333898ea093",
+    "strength": "50mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "12.5mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "25mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "50mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
     "name": "ATENOLOL",
     "uuid": "7540e598-880a-449e-a936-7ad11b9977f0",
     "strength": "25mg",
@@ -311,7 +360,7 @@
   },
   {
     "name": "ENALAPRIL",
-    "uuid": "247e53e6-86d5-4325-8c88-8a7bda16b5f0",
+    "uuid": "c28c7ddd-667c-48bc-9f3a-688c086f8018",
     "strength": "2.5mg",
     "dosageUnits": [
       {
