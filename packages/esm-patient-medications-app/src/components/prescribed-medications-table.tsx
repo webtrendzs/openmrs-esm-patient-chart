@@ -62,14 +62,17 @@ const PrescribedMedicationsTable = connect<
       if (encounter) {
         const encounterData = extractEncounterMedData(encounter.obs);
         const commonMeds = mapCommonMedsWithEncounter(pickDrugNamesFromObs(encounterData['HYPERTENSION TREATMENT STARTED, DETAILED']));
+        
         mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
           const medObs = encounterData['HYPERTENSION TREATMENT STARTED, DETAILED'];
           const orders = data.map((order: Array<any>) => {
+            console.log("order", order);
             return order.filter((o) => byPrescriptionInfo(o, medObs))[0];
           });
           
           setOrderItems(orders.map((o) => {
-            o.prescriptionDate = new Date(encounter.encounterDatetime);
+            if(o)
+              o.prescriptionDate = new Date(encounter.encounterDatetime);
             return o;
           }));
           setIsLoading(false);
@@ -200,6 +203,7 @@ const PrescribedMedicationsTable = connect<
 function mimicSearchMedications(prescriptions: Array<any>, encounterUuid: string, ab: AbortController): Promise<any> {
   const orders = [];
   prescriptions.forEach((med) => {
+    console.log("med", med);
     orders.push(searchMedications(med.name, encounterUuid, ab));
   });
   
@@ -223,7 +227,7 @@ function pickDrugNamesFromObs(obs: Array<any>) : Array<string> {
 
 function byPrescriptionInfo(order: OrderBasketItem, prescribedMedsObs: Array<Obs>): boolean {
   const compoundedDrug = [];
-
+  
   const mapppedObs: Array<string> = prescribedMedsObs.map((ob) => {
     
     let drugName: any = ob.display.match(/(?<=\().+?(?=\))/g).pop();
