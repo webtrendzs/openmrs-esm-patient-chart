@@ -66,7 +66,6 @@ const PrescribedMedicationsTable = connect<
         mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
           const medObs = encounterData['HYPERTENSION TREATMENT STARTED, DETAILED'];
           const orders = data.map((order: Array<any>) => {
-            console.log("order", order);
             return order.filter((o) => byPrescriptionInfo(o, medObs))[0];
           });
           
@@ -203,7 +202,6 @@ const PrescribedMedicationsTable = connect<
 function mimicSearchMedications(prescriptions: Array<any>, encounterUuid: string, ab: AbortController): Promise<any> {
   const orders = [];
   prescriptions.forEach((med) => {
-    console.log("med", med);
     orders.push(searchMedications(med.name, encounterUuid, ab));
   });
   
