@@ -65,7 +65,7 @@ const PrescribedMedicationsTable = connect<
         mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
           const medObs = encounterData['HYPERTENSION TREATMENT STARTED, DETAILED'];
           const orders = data.map((order: Array<any>) => {
-            return order.filter((o) => byPrescriptionInfo(o, medObs)).shift();
+            return order.filter((o) => byPrescriptionInfo(o, medObs))[0];
           });
           
           setOrderItems(orders.map((o) => {
