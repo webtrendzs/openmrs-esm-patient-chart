@@ -228,18 +228,18 @@ function byPrescriptionInfo(order: OrderBasketItem, prescribedMedsObs: Array<Obs
   
   const mapppedObs: Array<string> = prescribedMedsObs.map((ob) => {
     
-    let drugName: any = ob.display.match(/(?<=\().+?(?=\))/g).pop();
-    let drugDosage = ob.display.match(/(([0-9]*[.])?[0-9]+mg)/g);
+    let  [drugName] = ob.display.match(/(?<=\().+?(?=\))/g).slice(-1);
+    let drugDosage = ob.display.toLowerCase().match(/(([0-9]*[.])?[0-9]+mg)/g);
     const frequency = ob.groupMembers.filter(member => member.concept.display === 'MEDICATION FREQUENCY')[0];
     
     // if it is a compound drug
     if(drugName.match(/\s+AND\s+/)) {
       const drugNameSplit = drugName.split(" AND ");
-      compoundedDrug.push((drugNameSplit.pop().trim() + '/' + drugDosage.pop()+ '/' + frequency.value.display).toLowerCase())
-      drugName = drugNameSplit.shift();
+      compoundedDrug.push((drugNameSplit[1].trim() + '/' + drugDosage[1] + '/' + frequency.value.display).toLowerCase())
+      drugName = drugNameSplit[0];
     }
     
-    return (drugName.trim() + '/' + drugDosage.shift() + '/' + frequency.value.display).toLowerCase();
+    return (drugName.trim() + '/' + drugDosage[0] + '/' + frequency.value.display).toLowerCase();
 
   });
   
