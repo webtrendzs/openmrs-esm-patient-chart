@@ -56,6 +56,7 @@
 
 .dosageInfo {
   @include carbon--type-style("productive-heading-01");
+  font-size: 1.25rem;
 }
 
 .backButton {
@@ -110,9 +111,13 @@
     height: calc(100vh - 6rem);
   }
 
-  .orderFormAccordion {
-    height: calc(100vh - 22rem);
+  :global(.bx--accordion__content) {
+    overflow: scroll;
+    height: 85vh;
   }
+
+  
+
 }
 
 .grid {
@@ -130,4 +135,5 @@
 
 :global(.bx--accordion__content) {
   padding-right: 1rem;
+  margin-bottom: 3rem;
 }
