@@ -97,6 +97,24 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
       setMedicationsForOrder((existingOrders) => {
         return [...existingOrders, order];
       });
+      showToast({
+        critical: true,
+        kind: 'success',
+        millis: 7000,
+        title: t('medicationAdded', 'Refill Requested Added, Fill the Next'),
+        description: <>
+        <span>
+          <strong className={styles.dosageInfo}>
+            {capitalize(order.commonMedicationName)} ({order.dosage.dosage})
+          </strong>{' '}
+          <span className={styles.bodyShort01}>
+            &mdash; {order.route.name} &mdash; {order.dosageUnit.name} &mdash;{' '}
+          </span>
+          <span className={styles.caption01}>{t('dose', 'Dose').toUpperCase()}</span>{' '}
+          <strong className={styles.dosageInfo}>{order.frequency.name}</strong>
+        </span>
+      </>,
+      });
     }
     
   };
@@ -137,7 +155,7 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
                   &mdash; {item.route.name} &mdash; {item.dosageUnit.name} &mdash;{' '}
                 </span>
                 <span className={styles.caption01}>{t('dose', 'Dose').toUpperCase()}</span>{' '}
-                <strong className={styles.dosageInfo}>{item.dosage.dosage}</strong>
+                <strong className={styles.dosageInfo}>{item.frequency.name}</strong>
               </span>
             </>
             }>

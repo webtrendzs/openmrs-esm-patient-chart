@@ -72,13 +72,18 @@ export function postOrder(body: OrderPost, abortController?: AbortController) {
 }
 
 
-export function getPatientHTNEncounter(patientUuid: string, abortController: AbortController) {
+export function getPatientHTNEncounters(patientUuid: string, encounterTypes: Array<string>, abortController: AbortController) {
   const customRepresentation =
     'custom:(uuid,display,encounterDatetime,patient,obs,' +
     'encounterProviders:(uuid,display,' +
     'encounterRole:(uuid,display),' +
     'provider:(uuid,person:(uuid,display)))';
-  return openmrsFetch(`/ws/rest/v1/encounter?patient=${patientUuid}&order=desc&encounterType=CDMDispensary&limit=1&v=${customRepresentation}`, {
-    signal: abortController.signal,
-  });
+
+  const encounters = [];
+  encounterTypes.forEach((encounterType) => {
+    encounters.push(openmrsFetch(`/ws/rest/v1/encounter?patient=${patientUuid}&order=desc&encounterType=${encounterType}&limit=1&v=${customRepresentation}`, {
+      signal: abortController.signal,
+    }));
+  })
+  return Promise.all(encounters);
 }
