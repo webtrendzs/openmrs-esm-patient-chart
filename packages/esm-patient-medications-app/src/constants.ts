@@ -4,3 +4,5 @@ export const daysDurationUnit = {
   uuid: 'a899b9c4-1350-11df-a1f1-0026b9348838',
   display: 'DAYS',
 };
+
+export const HTNEncounters = ["CDMDispensary", "COEDMRETURN", "HTNDMINITIAL"];

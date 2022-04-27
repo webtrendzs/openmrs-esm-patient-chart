@@ -2,7 +2,9 @@ import { createErrorHandler, formatDate } from '@openmrs/esm-framework';
 import { InlineLoading } from 'carbon-components-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getPatientHTNEncounter } from '../api/api';
+import { getPatientHTNEncounters } from '../api/api';
+import { HTNEncounters } from '../constants';
+import { pickValidEncounter } from '../utils/general';
 
 import styles from './peer-info-header.scss';
 import { extractEncounterMedData } from './prescribed-medications';
@@ -29,9 +31,10 @@ const PeerInfoHeader: React.FC<PeerInfoHeaderProps> = ({ patientUuid }) => {
       setRtcDate(encounterData['RETURN VISIT DATE'][0]);
     } else {
       
-      const patientEncounterRequest = getPatientHTNEncounter(patientUuid, abortController).then(
-        ({ data }) => {
-          setEncounter(data.results[0]);
+      const patientEncounterRequest = getPatientHTNEncounters(patientUuid, HTNEncounters, abortController).then(
+        (data) => {
+          console.log("getPatientHTNEncounters", pickValidEncounter(data));
+          setEncounter(pickValidEncounter(data));
         },
         createErrorHandler,
       );

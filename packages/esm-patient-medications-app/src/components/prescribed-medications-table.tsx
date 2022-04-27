@@ -26,11 +26,13 @@ import { extractEncounterMedData, Obs } from '../prescriptions/prescribed-medica
 
 import { OrderBasketStore, orderBasketStore, orderBasketStoreActions, OrderBasketStoreActions } from '../medications/order-basket-store';
 import styles from '../prescriptions/prescribed-medications.scss';
-import { getPatientHTNEncounter } from '../api/api';
+import { getPatientHTNEncounters } from '../api/api';
 import { OrderBasketItem } from '../types/order-basket-item';
 
 import { searchMedications } from '../order-basket/drug-search';
 import { capitalize } from 'lodash';
+import { HTNEncounters } from '../constants';
+import { pickValidEncounter } from '../utils/general';
 
 interface PrescribedMedicationsTableProps {
   patientUuid: string;
@@ -79,9 +81,9 @@ const PrescribedMedicationsTable = connect<
         return () => abortController.abort();
       } else {
 
-        const patientEncounterRequest = getPatientHTNEncounter(patientUuid, abortController).then(
-          ({ data }) => {
-            setEncounter(data.results[0]);
+        const patientEncounterRequest = getPatientHTNEncounters(patientUuid, HTNEncounters, abortController).then(
+          (data) => {
+            setEncounter(pickValidEncounter(data));
           },
           createErrorHandler,
         );

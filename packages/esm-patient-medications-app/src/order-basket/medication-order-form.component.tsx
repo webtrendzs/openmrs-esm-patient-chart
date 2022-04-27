@@ -62,7 +62,7 @@ export default function MedicationOrderForm({
                 &mdash; {orderBasketItem.route.name} &mdash; {orderBasketItem.dosageUnit.name} &mdash;{' '}
               </span>
               <span className={styles.caption01}>{t('dose', 'Dose').toUpperCase()}</span>{' '}
-              <strong className={styles.dosageInfo}>{orderBasketItem.dosage.dosage}</strong>
+              <strong className={styles.dosageInfo}>{orderBasketItem.frequency.name}</strong>
             </span>
           </>
         )}
@@ -82,7 +82,7 @@ export default function MedicationOrderForm({
               </Button>
             </div>)
           ) : null}
-          <h2 className={styles.heading}>{t('orderForm', 'Order Form')}</h2>
+          <h2 className={styles.heading}>{!formInAccordion? (t('orderForm', 'Order Form')) : (t('refillForm', 'Refill Dispensing Request'))}</h2>
           <Row className={styles.row}>
             <Column>
               <h3 className={styles.productiveHeading02}>{t('dosageInstructions', '1. Dosage Instructions')}</h3>
@@ -410,7 +410,7 @@ export default function MedicationOrderForm({
             {t('discard', 'Discard')}
           </Button>
           <Button className={styles.button} kind="primary" type="submit">
-            {t('saveOrder', 'Save order')}
+            {!formInAccordion? t('saveOrder', 'Save order') : t('refillRequest', 'Request Refill')}
           </Button>
         </ButtonSet>
       </Form>
