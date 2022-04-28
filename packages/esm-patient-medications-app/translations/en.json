@@ -63,6 +63,8 @@
   "prnReason": "P.R.N. Reason",
   "prnReasonPlaceholder": "Reason to take medicine",
   "quantity": "Quantity",
+  "refillForm": "Refill Dispensing Request",
+  "refillRequest": "Request Refill",
   "refills": "Refills",
   "removeFromBasket": "Remove from basket",
   "renewedOrders_one": "{count} order(s) being renewed (continued)",

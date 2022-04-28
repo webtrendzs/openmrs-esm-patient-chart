@@ -5,4 +5,4 @@ export const daysDurationUnit = {
   display: 'DAYS',
 };
 
-export const HTNEncounters = ["CDMDispensary", "COEDMRETURN", "HTNDMINITIAL"];
+export const HTNEncounters = ["CDMDispensary", "COEDMRETURN", "HTNDMINITIAL", "HTNDMRETRUN"];
