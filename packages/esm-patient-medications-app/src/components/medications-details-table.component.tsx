@@ -396,7 +396,6 @@ export function OrderBasketItemActions({
 
   const handleOrderClick = useCallback(() => {
     const _medication: any = medication;
-    console.log(_medication)
     setItems([
       ...items,
       {
