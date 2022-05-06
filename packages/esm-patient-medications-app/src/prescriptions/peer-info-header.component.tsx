@@ -33,7 +33,6 @@ const PeerInfoHeader: React.FC<PeerInfoHeaderProps> = ({ patientUuid }) => {
       
       const patientEncounterRequest = getPatientHTNEncounters(patientUuid, HTNEncounters, abortController).then(
         (data) => {
-          console.log("getPatientHTNEncounters", pickValidEncounter(data));
           setEncounter(pickValidEncounter(data));
         },
         createErrorHandler,
