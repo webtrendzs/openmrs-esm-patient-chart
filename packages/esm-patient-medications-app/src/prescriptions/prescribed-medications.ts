@@ -24,7 +24,7 @@ export function extractEncounterMedData(obs: Array<Obs>): any {
     [`NHIF STATUS`, 
     `RETURN VISIT DATE`, 
     `CURRENT HYPERTENSION DRUGS USED FOR TREATMENT`,
-    `HYPERTENSION TREATMENT STARTED, DETAILED`,
+    `TREATMENT STARTED, DETAILED`,
     `TYPE OF FOLLOW-UP`].forEach((_match)=>{
         encounters[_match]=obs.filter((ob) => (new RegExp(`${_match}:([\s]*.*)`, 'i')).exec(ob.display)!=null)
     });

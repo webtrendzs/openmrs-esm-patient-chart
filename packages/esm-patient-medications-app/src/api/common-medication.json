@@ -147,6 +147,55 @@
     ]
   },
   {
+    "name": "HYDROCLOROTHIAZIDE",
+    "uuid": "2a07d1c2-75f3-4cdd-94a1-b4e9bd07b855",
+    "strength": "12.5mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "12.5mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "25mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "50mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
     "name": "HYDROCHLOROTHIAZIDE",
     "uuid": "19c6df2b-486c-48df-805a-7333898ea093",
     "strength": "50mg",
@@ -713,6 +762,746 @@
       },
       {
         "dosage": "81mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "AMITRIPTYLINE",
+    "uuid": "1580641e-e04f-4681-9bf2-e25c1ff43af4",
+    "strength": "25mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "25mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "50mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "CARBAMAZEPINE",
+    "uuid": "caf1accf-7e15-48da-93ac-33cf9acf2e15",
+    "strength": "100mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "100mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "200mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "GABAPENTIN",
+    "uuid": "ba516eca-4f7c-4e12-9e8b-326ef0e80ca0",
+    "strength": "150mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "150mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "300mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "PREGABALIN",
+    "uuid": "a0da0d58-0be5-44d5-8249-b3525c060df1",
+    "strength": "150mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a0810a-1350-11df-a1f1-0026b9348838",
+        "name": "CAPSULE, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "150mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "300mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "SILDENAFIL",
+    "uuid": "a515a6b4-95c4-4910-b9fb-e9bd4d5763a4",
+    "strength": "25mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "25mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "50mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "75mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "TELMISARTAN",
+    "uuid": "384f3d75-96bf-4ca5-afa2-e8e3ff8cf8d2",
+    "strength": "40mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "40mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "80mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "CANDESARTAN",
+    "uuid": "d04e2c38-16cb-4f40-b31d-48d05a000a91",
+    "strength": "4mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "4mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "8mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "CLOPIDOGREL",
+    "uuid": "46c2cf0e-f0c9-440d-9c55-24679b4d541b",
+    "strength": "75mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "75mg",
+        "numberOfPills": 1,
+        "selected": true
+      }
+    ]
+  },
+  {
+    "name": "DIGOXIN",
+    "uuid": "a117b70e-8d1e-45b8-8cf5-1fc9a9f898c9",
+    "strength": "75mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "0.25mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "0.125mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "CLEXANE",
+    "uuid": "19423275-d53f-483f-be46-1d939cf2f8c5",
+    "strength": "40mg",
+    "dosageUnits": [
+      {
+        "uuid": "e5e1fa57-2b8b-4aef-9b8c-8378b5382791",
+        "name": "SOLUTION FOR INJECTION, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Injection",
+        "conceptUuid": "69d2064a-f3e7-4f98-b35e-a18bfd4a4627",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "40mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "30mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "60mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "80mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "100mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "PROPRANOLOL",
+    "uuid": "08e33a77-1c96-4dbe-a239-0d5cd27fde40",
+    "strength": "30mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "30mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "40mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "ROSUVASTATIN",
+    "uuid": "8b9b7f9e-8103-425a-9dc3-41c7a1a74057",
+    "strength": "10mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "10mg",
+        "numberOfPills": 1,
+        "selected": true
+      }
+    ]
+  },
+  {
+    "name": "SPIRONOLACTONE",
+    "uuid": "1bfe65e2-ab8e-4570-8c66-00f134a406d8",
+    "strength": "25mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "25mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "50mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "75mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "100mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "TELMISARTAN",
+    "uuid": "384f3d75-96bf-4ca5-afa2-e8e3ff8cf8d2",
+    "strength": "40mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "40mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "80mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "AMITRIPTYLINE",
+    "uuid": "1580641e-e04f-4681-9bf2-e25c1ff43af4",
+    "strength": "25mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "25mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "50mg",
+        "numberOfPills": 1
+      }
+    ]
+  },
+  {
+    "name": "CARBAMAZEPINE",
+    "uuid": "1e26e5aa-8d84-49d9-8360-6a0584168a8c",
+    "strength": "100mg",
+    "dosageUnits": [
+      {
+        "uuid": "a8a07f8e-1350-11df-a1f1-0026b9348838",
+        "name": "TABLET, DOSAGE FORM",
+        "selected": true
+      }
+    ],
+    "route": [
+      {
+        "name": "Oral",
+        "conceptUuid": "db0c5937-3874-4eae-9566-9a645ad7ac65",
+        "selected": true
+      }
+    ],
+    "commonFrequencies": [
+      {
+        "name": "ONCE A DAY",
+        "conceptUuid": "bc1369f2-6795-11e7-843e-a0d3c1fcd41c",
+        "selected": true
+      },
+      {
+        "name": "TWICE A DAY",
+        "conceptUuid": "9c4ccc5f-4717-461c-b929-29085cbfc1c6"
+      },
+      {
+        "name": "THREE TIMES A DAY",
+        "conceptUuid": "e5a3b0ef-bace-4031-bf3b-74faf33b812c"
+      }
+    ],
+    "commonDosages": [
+      {
+        "dosage": "100mg",
+        "numberOfPills": 1,
+        "selected": true
+      },
+      {
+        "dosage": "200mg",
+        "numberOfPills": 1
+      },
+      {
+        "dosage": "400mg",
         "numberOfPills": 1
       }
     ]

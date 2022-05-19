@@ -63,14 +63,14 @@ const PrescribedMedicationsTable = connect<
       const abortController = new AbortController();
       if (encounter) {
         const encounterData = extractEncounterMedData(encounter.obs);
-        const commonMeds = mapCommonMedsWithEncounter(pickDrugNamesFromObs(encounterData['HYPERTENSION TREATMENT STARTED, DETAILED']));
+        const medObs = encounterData['TREATMENT STARTED, DETAILED'];
+        const commonMeds = mapCommonMedsWithEncounter(pickDrugNamesFromObs(medObs));
         
         mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
-          const medObs = encounterData['HYPERTENSION TREATMENT STARTED, DETAILED'];
+          console.log("data", data);
           const orders = data.map((order: Array<any>) => {
             return order.filter((o) => byPrescriptionInfo(o, medObs))[0];
           });
-          
           setOrderItems(orders.map((o) => {
             if(o)
               o.prescriptionDate = new Date(encounter.encounterDatetime);
@@ -244,7 +244,7 @@ function byPrescriptionInfo(order: OrderBasketItem, prescribedMedsObs: Array<Obs
     return (drugName.trim() + '/' + drugDosage[0] + '/' + frequency.value.display).toLowerCase();
 
   });
-  
+  console.log("order.commonMedicationName", order.commonMedicationName)
   return mapppedObs.concat(compoundedDrug).includes((order.commonMedicationName + '/' + order.dosage.dosage + '/' + order.frequency.name).toLowerCase());
 }
 
