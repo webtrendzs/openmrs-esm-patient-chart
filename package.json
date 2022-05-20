@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@jsenv/file-size-impact": "12.1.10",
-    "@openmrs/esm-framework": "next",
+    "@openmrs/esm-framework": "^3.2.1-pre.1163",
     "@swc/cli": "^0.1.57",
     "@swc/core": "^1.2.165",
     "@swc/jest": "^0.2.20",
@@ -55,7 +55,7 @@
     "jest-cli": "^26.4.2",
     "lerna": "^4.0.0",
     "lodash": "^4.17.21",
-    "openmrs": "next",
+    "openmrs": "^3.3.2-pre.5",
     "prettier": "^2.2.1",
     "pretty-quick": "^2.0.2",
     "react": "^16.0.0",

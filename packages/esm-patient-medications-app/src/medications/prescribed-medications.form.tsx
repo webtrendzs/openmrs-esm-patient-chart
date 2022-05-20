@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createErrorHandler, OpenmrsResource, showToast, useLayoutType, useSessionUser } from '@openmrs/esm-framework';
+import { createErrorHandler, OpenmrsResource, showToast, useLayoutType, useSession } from '@openmrs/esm-framework';
 import { connect } from 'unistore/react';
 import capitalize from 'lodash-es/capitalize';
 import { Accordion, AccordionItem, Button, ButtonSet } from 'carbon-components-react';
@@ -12,6 +12,7 @@ import MedicationOrderForm from '../order-basket/medication-order-form.component
 import { OrderBasketStore, orderBasketStoreActions, OrderBasketStoreActions } from './order-basket-store';
 import { orderDrugs } from '../order-basket/drug-ordering';
 import styles from '../order-basket/medication-order-form.scss';
+import { daysDurationUnit } from '../constants';
 
 
 interface PrescribedMedicationsFormProps {
@@ -25,7 +26,6 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
 )(({ patientUuid, items, closeWorkspace, setItems }: PrescribedMedicationsFormProps & OrderBasketStore & OrderBasketStoreActions) => {
   const { t } = useTranslation();
   const isTablet = useLayoutType() === 'tablet';
-  
   const [durationUnits, setDurationUnits] = useState<Array<OpenmrsResource>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showSignClose, setShowSignClose] = useState(false);
@@ -38,7 +38,7 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
     accordionItems[0] = true;
     setToggledItem(accordionItems);
     const abortController = new AbortController();
-    const durationUnitsRequest = getDurationUnits(abortController).then(
+    const durationUnitsRequest = getDurationUnits(abortController, daysDurationUnit.uuid).then(
       (res) => {setDurationUnits(res.data.setMembers)},
       createErrorHandler,
     );
@@ -48,7 +48,7 @@ const PrescribedMedicationsForm = connect<PrescribedMedicationsFormProps, OrderB
 
   }, [items]);
 
-  const sessionUser = useSessionUser();
+  const sessionUser = useSession();
   const [user, setUser] = useState(null);
 
   useEffect(() => {

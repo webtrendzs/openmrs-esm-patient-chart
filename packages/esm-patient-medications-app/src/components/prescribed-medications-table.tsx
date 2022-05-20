@@ -17,9 +17,8 @@ import {
 } from 'carbon-components-react';
 import Add16 from '@carbon/icons-react/es/add/16';
 import { EmptyState, CardHeader, launchPatientWorkspace } from '@openmrs/esm-patient-common-lib';
-import { createErrorHandler, formatDate } from '@openmrs/esm-framework';
-import { connect } from 'unistore/react';
-import { Provider } from 'unistore/react';
+import { createErrorHandler, formatDate, useConfig } from '@openmrs/esm-framework';
+import { connect, Provider } from 'unistore/react';
 
 import { mapCommonMedsWithEncounter } from '../api/common-medication';
 import { extractEncounterMedData, Obs } from '../prescriptions/prescribed-medications';
@@ -29,10 +28,11 @@ import styles from '../prescriptions/prescribed-medications.scss';
 import { getPatientHTNEncounters } from '../api/api';
 import { OrderBasketItem } from '../types/order-basket-item';
 
-import { searchMedications } from '../order-basket/drug-search';
+import { DaysDurationUnit, searchMedications } from '../order-basket/drug-search';
 import { capitalize } from 'lodash';
-import { HTNEncounters } from '../constants';
+import { daysDurationUnit, HTNEncounters } from '../constants';
 import { pickValidEncounter } from '../utils/general';
+import { ConfigObject } from '../config-schema';
 
 interface PrescribedMedicationsTableProps {
   patientUuid: string;
@@ -54,7 +54,6 @@ const PrescribedMedicationsTable = connect<
   }: PrescribedMedicationsTableProps & OrderBasketStore & OrderBasketStoreActions) => {
     const { t } = useTranslation();
     const displayText = t('prescribedMedications', 'Prescribed Medications');
-
     const [orderItems, setOrderItems] = useState<Array<OrderBasketItem> | []>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [encounter, setEncounter] = useState(null);
@@ -66,8 +65,7 @@ const PrescribedMedicationsTable = connect<
         const medObs = encounterData['TREATMENT STARTED, DETAILED'];
         const commonMeds = mapCommonMedsWithEncounter(pickDrugNamesFromObs(medObs));
         
-        mimicSearchMedications(commonMeds, encounter.uuid, abortController).then((data) => {
-          console.log("data", data);
+        mimicSearchMedications(commonMeds, encounter.uuid, abortController, daysDurationUnit).then((data) => {
           const orders = data.map((order: Array<any>) => {
             return order.filter((o) => byPrescriptionInfo(o, medObs))[0];
           });
@@ -201,10 +199,10 @@ const PrescribedMedicationsTable = connect<
   });
 
 
-function mimicSearchMedications(prescriptions: Array<any>, encounterUuid: string, ab: AbortController): Promise<any> {
+function mimicSearchMedications(prescriptions: Array<any>, encounterUuid: string, ab: AbortController, daysDurationUnit: DaysDurationUnit): Promise<any> {
   const orders = [];
   prescriptions.forEach((med) => {
-    orders.push(searchMedications(med.name, encounterUuid, ab));
+    orders.push(searchMedications(med.name, encounterUuid, ab, daysDurationUnit));
   });
   
   return Promise.all(orders);

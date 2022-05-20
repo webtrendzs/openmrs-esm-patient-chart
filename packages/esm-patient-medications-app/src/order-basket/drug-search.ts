@@ -19,7 +19,7 @@ import { Drug } from '../types/order';
 //
 // This method certainly isn't perfect, but again, since the common medication data is only available to us, it's kind of
 // the best thing we can do here.
-interface DaysDurationUnit {
+export interface DaysDurationUnit {
   uuid: string;
   display: string;
 }

@@ -7,14 +7,14 @@ import { Button, ButtonSet, DataTableSkeleton, SearchSkeleton } from 'carbon-com
 import { useTranslation } from 'react-i18next';
 import { OrderBasketItem } from '../types/order-basket-item';
 import { getDurationUnits, getPatientEncounterId, usePatientOrders } from '../api/api';
-import { createErrorHandler, showToast, useConfig, useLayoutType, useSessionUser } from '@openmrs/esm-framework';
+import { createErrorHandler, showToast, useConfig, useLayoutType, useSession  } from '@openmrs/esm-framework';
 import { OpenmrsResource } from '../types/openmrs-resource';
 import { orderDrugs } from './drug-ordering';
 import { connect } from 'unistore/react';
 import { OrderBasketStore, OrderBasketStoreActions, orderBasketStoreActions } from '../medications/order-basket-store';
 import { EmptyState, ErrorState } from '@openmrs/esm-patient-common-lib';
 import styles from './order-basket.scss';
-import { ConfigObject } from '../config-schema';
+import { careSettingUuid, daysDurationUnit } from '../constants';
 
 export interface OrderBasketProps {
   closeWorkspace(): void;
@@ -37,18 +37,16 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
   const [isMedicationOrderFormVisible, setIsMedicationOrderFormVisible] = useState(false);
   const [onMedicationOrderFormSigned, setOnMedicationOrderFormSign] =
     useState<(finalizedOrderBasketItem: OrderBasketItem) => void | null>(null);
-  const config = useConfig() as ConfigObject;
   const {
     data: activePatientOrders,
     isError,
     isLoading: isLoadingOrders,
     isValidating,
-  } = usePatientOrders(patientUuid, 'ACTIVE', config.careSettingUuid);
+  } = usePatientOrders(patientUuid, 'ACTIVE', careSettingUuid);
 
   useEffect(() => {
-    const durationUnitsConcept = config.durationUnitsConcept;
     const abortController = new AbortController();
-    const durationUnitsRequest = getDurationUnits(abortController, durationUnitsConcept).then(
+    const durationUnitsRequest = getDurationUnits(abortController, daysDurationUnit.uuid).then(
       (res) => {setDurationUnits(res.data.setMembers)},
       createErrorHandler,
     );
@@ -69,7 +67,7 @@ const OrderBasket = connect<OrderBasketProps, OrderBasketStoreActions, OrderBask
     }
   };
 
-  const sessionUser = useSessionUser();
+  const sessionUser = useSession();
   const [user, setUser] = useState(null);
 
   useEffect(() => {

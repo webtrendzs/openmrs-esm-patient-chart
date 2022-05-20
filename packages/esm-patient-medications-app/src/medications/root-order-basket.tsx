@@ -2,7 +2,11 @@ import React from 'react';
 import OrderBasket from '../order-basket/order-basket.component';
 import { Provider } from 'unistore/react';
 import { orderBasketStore } from './order-basket-store';
-import { DefaultWorkspaceProps } from '@openmrs/esm-patient-common-lib';
+
+interface DefaultWorkspaceProps {
+  patientUuid: string;
+  closeWorkspace: () => {}
+}
 
 export default function RootOrderBasket({ patientUuid, closeWorkspace }: DefaultWorkspaceProps) {
   return (
